@@ -1,3 +1,10 @@
+google-generativeai
+langchain-community
+langchain-huggingface
+langchain
+langchain-chroma
+sentence-transformers
+pytest
 aiohttp==3.9.5
 aiosignal==1.3.1
 annotated-types==0.7.0
