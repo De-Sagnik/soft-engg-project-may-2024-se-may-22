@@ -35,12 +35,20 @@ import axios from "axios";
 
 const drawerWidth = 240;
 
+// const paths = {
+//   Notes: "/",
+//   "Coding Assignments": "/course/CS3001/code",
+//   "Graded Assignments": "/assignment",
+//   "Memory Flashcards": "/flashcard",
+// };
+
 const paths = {
-  Notes: "/",
-  "Coding Assignments": "/code",
+  Notes: (courseName, courseId) => `/notes/${courseName}/${courseId}`,
+  "Coding Assignments": "/course/CS3001/code",
   "Graded Assignments": "/assignment",
   "Memory Flashcards": "/flashcard",
 };
+
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -115,28 +123,50 @@ const Sidenav = () => {
     setOpen(false);
   };
 
+  // const handleNotesClick = () => {
+  //   setIsNotesClicked((prev) => !prev);
+  // };
+
   const handleNotesClick = () => {
     setIsNotesClicked((prev) => !prev);
-  };
-
-  const handleNavigation = (path) => {
-    navigate(path);
+    if (!isNotesClicked && allCourses.length > 0) {
+      const defaultCourse = Object.entries(allCourses)[0]; // Get first course
+      navigate(paths.Notes(defaultCourse[1], defaultCourse[0])); // Navigate to default course
+    }
   };
   
+
+  // const handleNavigation = (path) => {
+  //   navigate(path);
+  // };
+  // const handleNavigation = (path, courseName = "", courseId = "") => {
+  //   navigate(path(courseName, courseId));
+  // };
+  
+  
+  const handleNavigation = (path, courseName = "", courseId = "") => {
+    const resolvedPath = typeof path === 'function' ? path(courseName, courseId) : path;
+    navigate(resolvedPath);
+  };
+  
+
+  
+  
   const material = isNotesClicked
-    ? [
-        "Notes",
-        ...Object.values(allCourses),
-        "Coding Assignments",
-        "Graded Assignments",
-        "Memory Flashcards",
-      ]
-    : [
-        "Notes",
-        "Coding Assignments",
-        "Graded Assignments",
-        "Memory Flashcards",
-      ];
+  ? [
+      "Notes",
+      ...Object.entries(allCourses).map(([courseId, courseName]) => ({ courseId, courseName })),
+      "Coding Assignments",
+      "Graded Assignments",
+      "Memory Flashcards",
+    ]
+  : [
+      "Notes",
+      "Coding Assignments",
+      "Graded Assignments",
+      "Memory Flashcards",
+    ];
+
 
   const icons = {
     Notes: <NotesIcon />,
@@ -192,21 +222,27 @@ const Sidenav = () => {
         </DrawerHeader>
         <Divider />
         <List>
-          {material.map((text) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton
-                onClick={() =>
-                  text === "Notes"
-                    ? handleNotesClick()
-                    : handleNavigation(paths[text])
-                }
-              >
-                <ListItemIcon>{icons[text]}</ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+  {material.map((item) => (
+    <ListItem key={item.courseId || item} disablePadding>
+      <ListItemButton
+        onClick={() => {
+          if (item === "Notes") {
+            handleNotesClick();
+          } else if (item.courseId) { // This is a course
+            handleNavigation(paths.Notes, item.courseName, item.courseId);
+          } else {
+            handleNavigation(paths[item]);
+          }
+        }}
+      >
+        <ListItemIcon>{icons[item] || <NotesIcon />}</ListItemIcon>
+        <ListItemText primary={item.courseName || item} />
+      </ListItemButton>
+    </ListItem>
+  ))}
+</List>
+
+
         <Divider />
         <List>
           {["Logout"].map((text) => (
