@@ -4,7 +4,7 @@ import { Typography } from "@mui/material";
 import Flashcard from "./Flashcard";
 import { Button, FormControl, Select, MenuItem } from "@mui/material";
 // import FlashcardGenerateButton from '../FlashcardGenerateButton'
-import "../../app.css";
+import "../../App.css";
 import axios from "axios";
 import { Box } from "@mui/material";
 
@@ -78,7 +78,7 @@ const FlashcardList = () => {
   const [flashcards, setFlashcards] = useState([]);
   const [allCourses, setAllCourses] = useState({});
   const [subject, setSubject] = useState("Select a Course");
-  
+
   useEffect(() => {
     axios.get('http://localhost:8000/flash_card/getall')
       .then(res => {
@@ -88,7 +88,7 @@ const FlashcardList = () => {
         console.error("Error fetching flashcards:", err);
       });
   }, []);
-  
+
   useEffect(() => {
     axios.get("http://localhost:8000/course/getall")
       .then((res) => {

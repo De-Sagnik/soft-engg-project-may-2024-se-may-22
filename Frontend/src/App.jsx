@@ -12,6 +12,7 @@ import Math from "./components/Notes/Math";
 import English from "./components/Notes/English";
 import ComputerScience from "./components/Notes/ComputerScience.jsx";
 import InstructorNotes from "./components/instructor_Notes/InstructorNotes.jsx";
+import Login from "./components/Login/Login";
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
             exact
             element={<CourseInstructor />}
           ></Route>
+          <Route path="/login" exact element={<Login />}></Route>
           <Route path="/instructor/GA" exact element={<Instructor />}></Route>
           <Route path="/instructor/notes" exact element={<InstructorNotes />}></Route>
         </Routes>
