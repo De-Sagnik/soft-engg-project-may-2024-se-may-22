@@ -78,7 +78,7 @@ const FlashcardList = () => {
   const [flashcards, setFlashcards] = useState([]);
   const [allCourses, setAllCourses] = useState({});
   const [subject, setSubject] = useState("Select a Course");
-  
+
   useEffect(() => {
     axios.get('http://localhost:8000/flash_card/getall')
       .then(res => {
@@ -88,7 +88,7 @@ const FlashcardList = () => {
         console.error("Error fetching flashcards:", err);
       });
   }, []);
-  
+
   useEffect(() => {
     axios.get("http://localhost:8000/course/getall")
       .then((res) => {
