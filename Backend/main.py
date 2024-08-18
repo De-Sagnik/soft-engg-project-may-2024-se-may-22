@@ -11,6 +11,7 @@ from routes.assignment import assgn
 from utils.security import auth
 from utils.response import responses
 from utils.extra import tags_metadata
+from utils.grading import grade_assignment
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
@@ -94,17 +95,15 @@ async def favicon():
 async def home():
     return "Hello from Home page"
 
-# scheduler = AsyncIOScheduler()
+scheduler = AsyncIOScheduler()
 
-# def job():
-#     print("Job executed!")
 
-# @app.on_event("startup")
-# async def startup_event():
-#     print("App Started")
-#     scheduler.add_job(job, IntervalTrigger(minutes=1))
-#     scheduler.start()
-#     return {"message": "Scheduler started!"}
+@app.on_event("startup")
+async def startup_event():
+    print("App Started")
+    scheduler.add_job(grade_assignment, IntervalTrigger(minutes=1))
+    scheduler.start()
+    return {"message": "Scheduler started!"}
 
 if __name__ == '__main__':
     import uvicorn
