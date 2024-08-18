@@ -85,36 +85,68 @@ const Instructor = () => {
   };
   
 
-  const handleAddQuestion = () => {
-    const newQuestion = {
-      // id: questions.length + 1,
-      question: questionText,
-      q_type: questionType,
-      options: questionType !== "Numerical" ? options : [],
-      answers: questionType !== "Numerical" ? correctAnswers : null,
-      assgn_type: assignmentType,
-      course_id: courseId, // Include courseId in the newQuestion object
-      week: week, // Include week in the newQuestion object
-      evaluated: false,
-      deadline: deadline ? deadline.toISOString() : null
-    }
-    resetForm();
+//   const handleAddQuestion = () => {
+//     const newQuestion = {
+//       // id: questions.length + 1,
+//       question: questionText,
+//       q_type: questionType,
+//       options: questionType !== "Numerical" ? options : [],
+//       answers: questionType !== "Numerical" ? correctAnswers : null,
+//       assgn_type: assignmentType,
+//       course_id: courseId, // Include courseId in the newQuestion object
+//       week: week, // Include week in the newQuestion object
+//       evaluated: false,
+//       deadline: deadline ? deadline.toISOString() : null
+//     }
+//     resetForm();
 
     
-    console.log(newQuestion)
-    axios.post(`http://localhost:8000/assignment/create`, newQuestion, {
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token')
-      }
-    })
-    .then(response => {
-      console.log("Question added successfully:", response.data);
-      // Handle success (e.g., clear form fields or update UI)
-    })
-    .catch(error => {
-      console.error("Error adding question:", error);
-      // Handle error (e.g., show an error message to the user)
-    });
+//     console.log(newQuestion)
+//     axios.post(`http://localhost:8000/assignment/create`, newQuestion, {
+//       headers: {
+//         Authorization: 'Bearer ' + localStorage.getItem('token')
+//       }
+//     })
+//     .then(response => {
+//       console.log("Question added successfully:", response.data);
+//       // Handle success (e.g., clear form fields or update UI)
+//     })
+//     .catch(error => {
+//       console.error("Error adding question:", error);
+//       // Handle error (e.g., show an error message to the user)
+//     });
+// };
+
+const handleAddQuestion = () => {
+  const newQuestion = {
+    question: questionText,
+    q_type: questionType,
+    options: questionType !== "Numerical" ? options : [],
+    answers: questionType !== "Numerical" ? correctAnswers : [],
+    assgn_type: assignmentType,
+    course_id: courseId,
+    week: parseInt(week, 10), // Ensure week is a number
+    evaluated: false,
+    deadline: deadline ? deadline.toISOString() : null
+  };
+
+  console.log(newQuestion);
+
+  axios.post(`http://localhost:8000/assignment/create`, newQuestion, {
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('token')
+    }
+  })
+  .then(response => {
+    console.log("Question added successfully:", response.data);
+    // Handle success (e.g., clear form fields or update UI)
+  })
+  .catch(error => {
+    console.error("Error adding question:", error);
+    // Handle error (e.g., show an error message to the user)
+  });
+
+  resetForm();
 };
 
 
