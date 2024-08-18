@@ -36,6 +36,7 @@ const paths = {
   "Graded Assignments": "/instructor/GA",
 };
 
+
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
     flexGrow: 1,
@@ -94,9 +95,15 @@ const InstructorSidenav = () => {
     navigate(path);
   };
 
+  // const handleNotesClick = () => {
+  //   setIsNotesClicked((prev) => !prev);
+  // };
+
   const handleNotesClick = () => {
     setIsNotesClicked((prev) => !prev);
+    handleNavigation(paths["Notes"]);
   };
+  
 
   const subjects = ["Biology", "Math", "English", "Computer Science"];
 
@@ -112,6 +119,8 @@ const InstructorSidenav = () => {
     "Computer Science": "",
     "Memory Flashcards": <PsychologyIcon />,
   };
+
+  
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -160,7 +169,7 @@ const InstructorSidenav = () => {
           ))}
         </List>
         <Divider />
-        <List>
+        {/* <List>
           {["Logout"].map((text) => (
             <ListItem key={text} disablePadding>
               <ListItemButton>
@@ -171,7 +180,7 @@ const InstructorSidenav = () => {
               </ListItemButton>
             </ListItem>
           ))}
-        </List>
+        </List> */}
       </Drawer>
       <Main open={open}>
         <DrawerHeader />

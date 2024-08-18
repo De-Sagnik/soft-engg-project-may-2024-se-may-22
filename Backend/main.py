@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from routes.user import user
 from routes.course import course
+from routes.notes import notes
 from routes.course_material import course_material
 from routes.coding_assignments import coding_assignment
 from routes.flashcard import fc
@@ -11,6 +12,7 @@ from routes.assignment import assgn
 from utils.security import auth
 from utils.response import responses
 from utils.extra import tags_metadata
+from utils.grading import grade_assignment
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
@@ -45,6 +47,7 @@ app.include_router(course_material)
 app.include_router(fc)
 app.include_router(assgn)
 app.include_router(coding_assignment)
+app.include_router(notes)
 
 async def send_res(websocket: WebSocket, streamer):
     last_send = 0
@@ -94,17 +97,15 @@ async def favicon():
 async def home():
     return "Hello from Home page"
 
-# scheduler = AsyncIOScheduler()
+scheduler = AsyncIOScheduler()
 
-# def job():
-#     print("Job executed!")
 
-# @app.on_event("startup")
-# async def startup_event():
-#     print("App Started")
-#     scheduler.add_job(job, IntervalTrigger(minutes=1))
-#     scheduler.start()
-#     return {"message": "Scheduler started!"}
+@app.on_event("startup")
+async def startup_event():
+    print("App Started")
+    scheduler.add_job(grade_assignment, IntervalTrigger(minutes=1))
+    scheduler.start()
+    return {"message": "Scheduler started!"}
 
 if __name__ == '__main__':
     import uvicorn

@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
+import axios from "axios";
 import {
   Container,
   Typography,
@@ -15,6 +17,17 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import InstructorSidenav from "../InstructorSidenav";
 
+// class ProgrammingAssignment(BaseModel):
+//     question: str
+//     language: CodeLanguage
+//     public_testcase: List[dict]
+//     private_testcase: List[dict]
+//     assgn_type: AssignmentType
+//     course_id: str
+//     week: int = Field(ge=0, le=12)
+//     evaluated: bool | None = False
+//     deadline: datetime = Field(description="Deadline in ISO format")
+
 const CourseInstructor = () => {
   const [question, setQuestion] = useState("");
   const [questionExplanation, setQuestionExplanation] = useState("");
@@ -23,29 +36,91 @@ const CourseInstructor = () => {
   const [isPublic, setIsPublic] = useState(false);
   const [testCases, setTestCases] = useState([]);
   const [deadline, setDeadline] = useState(null);
+  const [week, setWeek] = useState("");
+  const [language, setLanguage] = useState("");
+
+
 
   const addTestCase = () => {
     const newTestCase = {
       input: testCaseInput,
       output: expectedOutput,
-      public: isPublic,
+      isPublic: isPublic,  // Renamed from 'public' to 'isPublic'
     };
     setTestCases([...testCases, newTestCase]);
     setTestCaseInput("");
     setExpectedOutput("");
     setIsPublic(false);
   };
+  
+  
+
+  // const handleQuestionSubmit = () => {
+  //   const newAssignment = {
+  //     question,
+  //     questionExplanation,
+  //     testCases,
+  //     deadline,
+  //   };
+  //   console.log("Assignment Submitted: ", newAssignment);
+  //   // TODO: Implement the logic to save this assignment
+  // };
 
   const handleQuestionSubmit = () => {
+    // Separate public and private test cases
+    const public_testcase = testCases
+      .filter((testCase) => testCase.isPublic)
+      .map(({ isPublic, ...rest }) => rest); // Remove the 'isPublic' key
+  
+    const private_testcase = testCases
+      .filter((testCase) => !testCase.isPublic)
+      .map(({ isPublic, ...rest }) => rest); // Remove the 'isPublic' key
+  
     const newAssignment = {
-      question,
-      questionExplanation,
-      testCases,
-      deadline,
+      question: question,
+      language: language,
+      public_testcase: public_testcase,
+      private_testcase: private_testcase,
+      assgn_type: "GrPA",
+      course_id: "CS3001",
+      week: week,
+      evaluated: false,
+      deadline: deadline ? deadline.toISOString() : null,
     };
+  
     console.log("Assignment Submitted: ", newAssignment);
-    // TODO: Implement the logic to save this assignment
+  
+    axios
+      .post(
+        `http://localhost:8000/coding_assignment/create_programming_question`,
+        newAssignment,
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      )
+      .then((response) => {
+        console.log("Assignment added successfully:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error adding assignment:", error);
+      });
   };
+  
+  
+
+    // class ProgrammingAssignment(BaseModel):
+//     question: str
+//     language: CodeLanguage
+//     public_testcase: List[dict]
+//     private_testcase: List[dict]
+//     assgn_type: AssignmentType
+//     course_id: str
+//     week: int = Field(ge=0, le=12)
+//     evaluated: bool | None = False
+//     deadline: datetime = Field(description="Deadline in ISO format")
+
 
   return (
     <>
@@ -73,6 +148,51 @@ const CourseInstructor = () => {
                   />
                 </LocalizationProvider>
               </Grid>
+
+              <Grid item xs={12}>
+                <br></br>
+  <TextField
+    label="Week"
+    fullWidth
+    select
+    variant="outlined"
+    value={week}
+    onChange={(e) => setWeek(e.target.value)}
+    SelectProps={{
+      native: true,
+    }}
+  >
+    <option value="" disabled></option>
+    {[...Array(12)].map((_, index) => (
+      <option key={index + 1} value={index + 1}>
+        Week {index + 1}
+      </option>
+    ))}
+  </TextField>
+
+
+
+</Grid>
+
+<Grid item xs={12}>
+  <TextField
+    label="Language"
+    fullWidth
+    select
+    variant="outlined"
+    value={language}
+    onChange={(e) => setLanguage(e.target.value)}
+    SelectProps={{
+      native: true,
+    }}
+  >
+    <option value="" disabled></option>
+    <option value="python">python</option>
+    <option value="java">java</option>
+  </TextField>
+</Grid>
+
+
               <Grid item xs={12}>
                 <TextField
                   label="Question"
@@ -85,7 +205,7 @@ const CourseInstructor = () => {
                 />
               </Grid>
 
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <TextField
                   label="Question Explanation"
                   fullWidth
@@ -95,7 +215,7 @@ const CourseInstructor = () => {
                   value={questionExplanation}
                   onChange={(e) => setQuestionExplanation(e.target.value)}
                 />
-              </Grid>
+              </Grid> */}
 
               <Grid item xs={6}>
                 <TextField
@@ -118,17 +238,20 @@ const CourseInstructor = () => {
               </Grid>
 
               <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={isPublic}
-                      onChange={(e) => setIsPublic(e.target.checked)}
-                    />
-                  }
-                  label="Make this test case public"
-                />
-              </Grid>
+  <FormControlLabel
+    control={
+      <Checkbox
+        checked={isPublic}
+        onChange={(e) => setIsPublic(e.target.checked)}
+        color="primary"
+      />
+    }
+    label="Public Test Case"
+  />
+</Grid>
 
+
+  
               <Grid item xs={12}>
                 <Button
                   variant="contained"
@@ -139,6 +262,8 @@ const CourseInstructor = () => {
                   Add Test Case
                 </Button>
               </Grid>
+
+              
 
               <Grid item xs={12}>
                 <Typography variant="h6">Test Cases:</Typography>
