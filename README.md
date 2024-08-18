@@ -86,7 +86,8 @@ python3 main.py
 - For Frontend
 
 ```js
-npm run dev
+npm install
+npm start
 ```
 
 ### 2. Access the app

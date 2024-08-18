@@ -4,26 +4,9 @@ import { Box, Typography, Container, Paper, Button, Dialog, DialogActions, Dialo
 import AddIcon from '@mui/icons-material/Add';
 import ImageIcon from '@mui/icons-material/Image';
 import LinkIcon from '@mui/icons-material/Link';
-// import {
-//     Card,
-//     CardActions,
-//     CardContent,
-//     Container,
-//     Dialog,
-//     DialogActions,
-//     DialogContent,
-//     DialogContentText,
-//     DialogTitle,
-//     List,
-//     ListItem,
-//     ListItemText,
-//     TextField,
-//     Typography
-// } from '@mui/material';
 import InstructorSidenav from '../InstructorSidenav';
 
 const drawerWidth = 240;
-
 
 const InstructorNotes = () => {
   const [open, setOpen] = useState(false);
@@ -34,13 +17,6 @@ const InstructorNotes = () => {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState(null);
   const [courses, setCourses] = useState([]);
-  // const [open, setOpen] = useState(false);
-  // const [notes, setNotes] = useState([]);
-  // const [currentNote, setCurrentNote] = useState({id: null, subject: '', content: []});
-  // const [editing, setEditing] = useState(false);
-  // const [viewing, setViewing] = useState(false);
-  // const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
-  // const [noteToDelete, setNoteToDelete] = useState(null);
   const [allCourses, setAllCourses] = useState([]); // State to hold courses
 
   useEffect(() => {
@@ -119,19 +95,19 @@ const InstructorNotes = () => {
         //   content: str
         //   url: Optional[HttpUrl] = None
 
-        axios.post(`http://localhost:8000/course_material/create`, newQuestion, {
-            headers: {
-                Authorization: 'Bearer ' + localStorage.getItem('token')
-            }
-        })
-            .then(response => {
-                console.log("Notes added successfully:", response.data);
-                // Handle success (e.g., clear form fields or update UI)
-            })
-            .catch(error => {
-                console.error("Error adding notes:", error);
-                // Handle error (e.g., show an error message to the user)
-            });
+        // axios.post(`http://localhost:8000/course_material/create`, newQuestion, {
+        //     headers: {
+        //         Authorization: 'Bearer ' + localStorage.getItem('token')
+        //     }
+        // })
+        //     .then(response => {
+        //         console.log("Notes added successfully:", response.data);
+        //         // Handle success (e.g., clear form fields or update UI)
+        //     })
+        //     .catch(error => {
+        //         console.error("Error adding notes:", error);
+        //         // Handle error (e.g., show an error message to the user)
+        //     });
 
     }
 
