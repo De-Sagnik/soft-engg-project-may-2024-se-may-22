@@ -4,10 +4,10 @@ from utils.security import get_current_active_user
 from models.user import User
 from models.assignment import AssignmentSubmissionForm
 from models.model import GenerateResponse, Query
-from utils.response import objectEntity, objectsEntity, responses
+from utils.response import objectsEntity, responses
 from utils.validation import NotFoundError
 from bson import ObjectId
-from ai.colab_request import search_generate, generate
+from ai.gemini import search_generate, generate
 
 from database.db import db
 

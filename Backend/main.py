@@ -1,4 +1,4 @@
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI, BackgroundTasks, WebSocket
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -15,6 +15,10 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 import asyncio
+from asyncio import sleep
+from ai.gemini import generate_chunks
+from threading import Thread
+from ai.format_query import format_query
 
 
 app = FastAPI(
@@ -41,6 +45,41 @@ app.include_router(course_material)
 app.include_router(fc)
 app.include_router(assgn)
 app.include_router(coding_assignment)
+
+async def send_res(websocket: WebSocket, streamer):
+    last_send = 0
+    while True:
+        await sleep(0.5)
+        s = len(streamer.queue)
+        if s>last_send:
+            await websocket.send_text(streamer.queue[last_send: s])
+        elif not streamer.has_next:
+            print(streamer.queue)
+            await websocket.close()
+            break
+        last_send = s
+
+@app.websocket("/generate")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    request = await websocket.receive_json()
+    if request.get('query') is None:
+        websocket.close()
+        return
+    await generate_chunks(request.get('query'), websocket)
+    await websocket.close()
+
+@app.websocket("/search_generate")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    request = await websocket.receive_json()
+    if request.get('query') is None or request.get('course_id') is None or request.get('week') is None:
+        websocket.close()
+        return
+    
+    query = format_query(request.get('query'), request.get('week'), request.get('course_id') is None)
+    await generate_chunks(query, websocket)
+    await websocket.close()
 
 # Mounting Static folder
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -69,4 +108,4 @@ async def home():
 
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(app="main:app", host='0.0.0.0', port=8000, reload=True)
+    uvicorn.run(app="main:app", host='0.0.0.0', port=8000)

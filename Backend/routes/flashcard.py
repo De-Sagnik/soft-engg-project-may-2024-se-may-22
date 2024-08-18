@@ -1,13 +1,13 @@
-from fastapi import APIRouter, Security, Path, HTTPException
+from fastapi import APIRouter, Security, HTTPException
 from models.user import User
-from utils.response import objectEntity, objectsEntity, responses
+from utils.response import objectEntity, responses
 
 from database.db import db
 from models.flashcard import FlashCard, FlashCardUpdate
 from typing import Annotated
 from utils.security import get_current_active_user
 from utils.validation import AlreadyExistsError, NotExistsError, NotFoundError
-from ai.colab_request import search_generate_flashcard
+from ai.gemini import search_generate_flashcard
 
 from bson import ObjectId
 
