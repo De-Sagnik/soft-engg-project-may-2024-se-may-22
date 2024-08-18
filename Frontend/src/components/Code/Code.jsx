@@ -106,7 +106,7 @@ const Code = () => {
             >
                 <div className="card flex justify-content-center">
                     <Dropdown value={currentAssignment} onChange={(e) => setCurrentAssignment(e.value)}
-                              options={assignments} optionLabel="name" placeholder="Select a Country"
+                              options={assignments} optionLabel="name" placeholder="Select a Assignment"
                               valueTemplate={selectedCountryTemplate} itemTemplate={countryOptionTemplate}
                               className="w-full md:w-14rem"
                               dropdownIcon={(opts) => {

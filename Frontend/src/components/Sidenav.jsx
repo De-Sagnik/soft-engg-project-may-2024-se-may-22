@@ -21,9 +21,6 @@ import QuizIcon from "@mui/icons-material/Quiz";
 import PsychologyIcon from "@mui/icons-material/Psychology";
 import {useNavigate} from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
-
-import {useAuth0} from "@auth0/auth0-react";
-import {Button} from "@mui/material";
 import axios from "axios";
 // import { Inter } from "next/font/google";
 
@@ -31,30 +28,41 @@ import axios from "axios";
 
 const drawerWidth = 240;
 
+// const paths = {
+//   Notes: "/",
+//   "Coding Assignments": "/course/CS3001/code",
+//   "Graded Assignments": "/assignment",
+//   "Memory Flashcards": "/flashcard",
+// };
+
 const paths = {
-    Notes: "/",
-    "Coding Assignments": "/code",
+    Notes: (courseName, courseId) => `/notes/${courseName}/${courseId}`,
+    "Coding Assignments": "/course/CS3001/code",
     "Graded Assignments": "/assignment",
     "Memory Flashcards": "/flashcard",
 };
 
-const Main = styled("main", {shouldForwardProp: (prop) => prop !== "open"})(
-    ({theme, open}) => ({
-        flexGrow: 1,
-        padding: theme.spacing(3),
-        transition: theme.transitions.create("margin", {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        marginLeft: `-${drawerWidth}px`,
-        ...(open && {
+
+const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
+    ({ theme, open }) => {
+        const marginLeftValue = `-${drawerWidth}px`;
+        return {
+            flexGrow: 1,
+            padding: theme.spacing(3),
             transition: theme.transitions.create("margin", {
-                easing: theme.transitions.easing.easeOut,
-                duration: theme.transitions.duration.enteringScreen,
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.leavingScreen,
             }),
-            marginLeft: 0,
-        }),
-    })
+            marginLeft: marginLeftValue,
+            ...(open && {
+                transition: theme.transitions.create("margin", {
+                    easing: theme.transitions.easing.easeOut,
+                    duration: theme.transitions.duration.enteringScreen,
+                }),
+                marginLeft: 0,
+            }),
+        };
+    }
 );
 
 
@@ -66,8 +74,8 @@ const AppBar = styled(MuiAppBar, {
         duration: theme.transitions.duration.leavingScreen,
     }),
     ...(open && {
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: `${drawerWidth}px`,
+        width: `calc(100% - ${drawerWidth}px)`, // Corrected to a valid template literal
+        marginLeft: `${drawerWidth}px`, // Corrected to a valid template literal
         transition: theme.transitions.create(["margin", "width"], {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
@@ -111,18 +119,37 @@ const Sidenav = () => {
         setOpen(false);
     };
 
+    // const handleNotesClick = () => {
+    //   setIsNotesClicked((prev) => !prev);
+    // };
+
     const handleNotesClick = () => {
         setIsNotesClicked((prev) => !prev);
+        if (!isNotesClicked && allCourses.length > 0) {
+            const defaultCourse = Object.entries(allCourses)[0]; // Get first course
+            navigate(paths.Notes(defaultCourse[1], defaultCourse[0])); // Navigate to default course
+        }
     };
 
-    const handleNavigation = (path) => {
-        navigate(path);
+
+    // const handleNavigation = (path) => {
+    //   navigate(path);
+    // };
+    // const handleNavigation = (path, courseName = "", courseId = "") => {
+    //   navigate(path(courseName, courseId));
+    // };
+
+
+    const handleNavigation = (path, courseName = "", courseId = "") => {
+        const resolvedPath = typeof path === 'function' ? path(courseName, courseId) : path;
+        navigate(resolvedPath);
     };
+
 
     const material = isNotesClicked
         ? [
             "Notes",
-            ...Object.values(allCourses),
+            ...Object.entries(allCourses).map(([courseId, courseName]) => ({courseId, courseName})),
             "Coding Assignments",
             "Graded Assignments",
             "Memory Flashcards",
@@ -134,6 +161,7 @@ const Sidenav = () => {
             "Memory Flashcards",
         ];
 
+
     const icons = {
         Notes: <NotesIcon/>,
         "Coding Assignments": <CodeIcon/>,
@@ -142,7 +170,9 @@ const Sidenav = () => {
     };
 
 
-    const {user, loginWithRedirect, isAuthenticated, logout} = useAuth0();
+    // const { user, loginWithRedirect, isAuthenticated, logout } = useAuth0();
+    // console.log("User", user);
+
     return (
         <Box sx={{display: "flex"}}>
             <CssBaseline/>
@@ -151,18 +181,18 @@ const Sidenav = () => {
                     <Typography variant="h6" noWrap component="div">
                         Study Buddy
                     </Typography>
-                    {isAuthenticated ? (
-                        <div>
-                            <span>Welcome, {user.name}</span>
-                            <Button variant="" onClick={() => logout()}>
-                                Logout
-                            </Button>
-                        </div>
-                    ) : (
-                        <Button variant="" onClick={() => loginWithRedirect()}>
-                            Login
-                        </Button>
-                    )}
+                    {/* {isAuthenticated ? (
+            <div>
+              <span>Welcome, {user.name}</span>
+              <Button variant="" onClick={() => logout()}>
+                Logout
+              </Button>
+            </div>
+          ) : (
+            <Button variant="" onClick={() => loginWithRedirect()}>
+              Login
+            </Button>
+          )} */}
                 </Toolbar>
             </AppBar>
 
@@ -186,21 +216,27 @@ const Sidenav = () => {
                 </DrawerHeader>
                 <Divider/>
                 <List>
-                    {material.map((text) => (
-                        <ListItem key={text} disablePadding>
+                    {material.map((item) => (
+                        <ListItem key={item.courseId || item} disablePadding>
                             <ListItemButton
-                                onClick={() =>
-                                    text === "Notes"
-                                        ? handleNotesClick()
-                                        : handleNavigation(paths[text])
-                                }
+                                onClick={() => {
+                                    if (item === "Notes") {
+                                        handleNotesClick();
+                                    } else if (item.courseId) { // This is a course
+                                        handleNavigation(paths.Notes, item.courseName, item.courseId);
+                                    } else {
+                                        handleNavigation(paths[item]);
+                                    }
+                                }}
                             >
-                                <ListItemIcon>{icons[text]}</ListItemIcon>
-                                <ListItemText primary={text}/>
+                                <ListItemIcon>{icons[item] || <NotesIcon/>}</ListItemIcon>
+                                <ListItemText primary={item.courseName || item}/>
                             </ListItemButton>
                         </ListItem>
                     ))}
                 </List>
+
+
                 <Divider/>
                 <List>
                     {["Logout"].map((text) => (
