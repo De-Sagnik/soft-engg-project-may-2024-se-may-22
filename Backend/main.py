@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from routes.user import user
 from routes.course import course
+from routes.notes import notes
 from routes.course_material import course_material
 from routes.coding_assignments import coding_assignment
 from routes.flashcard import fc
@@ -46,6 +47,7 @@ app.include_router(course_material)
 app.include_router(fc)
 app.include_router(assgn)
 app.include_router(coding_assignment)
+app.include_router(notes)
 
 async def send_res(websocket: WebSocket, streamer):
     last_send = 0
