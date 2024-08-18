@@ -26,7 +26,7 @@ import PsychologyIcon from "@mui/icons-material/Psychology";
 import { useNavigate } from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
 
-import { useAuth0 } from "@auth0/auth0-react";
+// import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "@mui/material";
 import axios from "axios";
 // import { Inter } from "next/font/google";
@@ -146,8 +146,8 @@ const Sidenav = () => {
   };
   
 
-  const { user, loginWithRedirect, isAuthenticated, logout } = useAuth0();
-  console.log("User", user);
+  // const { user, loginWithRedirect, isAuthenticated, logout } = useAuth0();
+  // console.log("User", user);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -157,7 +157,7 @@ const Sidenav = () => {
           <Typography variant="h6" noWrap component="div">
             Study Buddy
           </Typography>
-          {isAuthenticated ? (
+          {/* {isAuthenticated ? (
             <div>
               <span>Welcome, {user.name}</span>
               <Button variant="" onClick={() => logout()}>
@@ -168,7 +168,7 @@ const Sidenav = () => {
             <Button variant="" onClick={() => loginWithRedirect()}>
               Login
             </Button>
-          )}
+          )} */}
         </Toolbar>
       </AppBar>
 

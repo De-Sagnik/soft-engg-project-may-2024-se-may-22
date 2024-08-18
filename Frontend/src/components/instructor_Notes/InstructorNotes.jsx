@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Box, Typography, Container, Paper, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Card, CardActions, CardContent, IconButton, List, ListItem, ListItemText } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Box, Typography, Container, Paper, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Card, CardActions, CardContent, IconButton, List, ListItem, ListItemText, MenuItem, Select } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ImageIcon from '@mui/icons-material/Image';
 import LinkIcon from '@mui/icons-material/Link';
@@ -11,13 +12,26 @@ const drawerWidth = 240;
 const InstructorNotes = () => {
   const [open, setOpen] = useState(false);
   const [notes, setNotes] = useState([]);
-  const [currentNote, setCurrentNote] = useState({ id: null, subject: '', content: [] });
+  const [currentNote, setCurrentNote] = useState({ id: null, subject: '', content: [], course_id: '', url: '' });
   const [editing, setEditing] = useState(false);
   const [viewing, setViewing] = useState(false);
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState(null);
-  const [allCourses, setAllCourses] = useState([]); // State to hold courses
+  const [courses, setCourses] = useState([]);
 
+  useEffect(() => {
+    axios.get("http://localhost:8000/course/getall")
+      .then((res) => {
+        const courseOptions = res.data.map(course => ({
+          id: course.course_id,
+          name: course.course_name
+        }));
+        setCourses(courseOptions);
+      })
+      .catch(err => {
+        console.error("Error fetching courses:", err);
+      });
+  }, []);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -30,61 +44,29 @@ const InstructorNotes = () => {
         { type: 'link', value: '' },
         // Add other types as needed
       ],
+      course_id: '',
+      url: ''
     });
     setEditing(false);
     setViewing(false);
   };
   
 
-
-  useEffect(() => {
-    axios.get("http://localhost:8000/course/getall")
-      .then((res) => {
-        const courses = {};
-        res.data.forEach(course => {
-          courses[course.course_id] = course.course_name;
-        });
-        setAllCourses(courses);
-      })
-      .catch(err => {
-        console.error("Error fetching courses:", err);
-      });
-  }, []);
-
-  const handleUpload = () => {
-    const newQuestion = {
-      course_id: currentNote.course_id, // Assuming you have this in your state or form
-      title: currentNote.subject,       // Assuming 'subject' is the title in your currentNote
-      content: JSON.stringify(currentNote.content), // Convert content to string if needed
-      url: currentNote.url || null       // Replace with actual url field, defaulting to null if not provided
-    };
-
-    console.log(newQuestion);
-
-    axios.post(`http://localhost:8000/course_material/create`, newQuestion, {
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token')
-      }
-    })
-    .then(response => {
-      console.log("Notes added successfully:", response.data);
-      // Handle success (e.g., clear form fields or update UI)
-    })
-    .catch(error => {
-      console.error("Error adding notes:", error);
-      // Handle error (e.g., show an error message to the user)
-    });
-};
-
-
-    // class Notes(BaseModel):
+  // class Notes(BaseModel):
   //   course_id: str
   //   title: str
   //   content: str
   //   url: Optional[HttpUrl] = None
-    
+  const handleUpload = () => {
+    const newQuestion = {
+      course_id: currentNote.course_id, // Maps selected course_id
+      title: currentNote.content.find(block => block.type === 'title')?.value || '', // Extracts the title
+      content: currentNote.content.find(block => block.type === 'text')?.value || '', // Extracts the paragraph text
+      url: currentNote.content.find(block => block.type === 'link')?.value || null // Extracts the link
+    };
     console.log(newQuestion)
-    axios.post(`http://localhost:8000/course_material/create`, newQuestion, {
+  
+    axios.post(`http://localhost:8000/notes/create`, newQuestion, {
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token')
       }
@@ -97,7 +79,8 @@ const InstructorNotes = () => {
       console.error("Error adding notes:", error);
       // Handle error (e.g., show an error message to the user)
     });
-};
+  };
+  
 
 
   const handleClose = () => {
@@ -210,8 +193,8 @@ const InstructorNotes = () => {
                 </CardContent>
                 <CardActions>
                   <Button size="small" color="primary" onClick={() => handleView(note)}>View</Button>
-                  <Button size="small" color="secondary" onClick={() => handleEdit(note)}>Edit</Button>
-                  <Button size="small" color="error" onClick={() => handleDelete(note.id)}>Delete</Button>
+                  {/* <Button size="small" color="secondary" onClick={() => handleEdit(note)}>Edit</Button>
+                  <Button size="small" color="error" onClick={() => handleDelete(note.id)}>Delete</Button> */}
                 </CardActions>
               </Card>
             ))}
@@ -223,18 +206,23 @@ const InstructorNotes = () => {
   <DialogContentText>
     {editing ? 'Edit your note details below.' : viewing ? 'View your note details below.' : 'Enter your note details below.'}
   </DialogContentText>
-  <TextField
-    autoFocus
-    margin="dense"
-    id="subject"
-    label="Subject"
-    type="text"
-    fullWidth
-    variant="standard"
-    value={currentNote.subject}
-    onChange={(e) => setCurrentNote({ ...currentNote, subject: e.target.value })}
-    disabled={viewing} // Disable if viewing
-  />
+  <Select
+  margin="dense"
+  id="course"
+  label="Course"
+  value={currentNote.course_id}
+  onChange={(e) => setCurrentNote({ ...currentNote, course_id: e.target.value })}
+  fullWidth
+  variant="standard"
+  disabled={viewing} // Disable if viewing
+>
+  {courses.map((course) => (
+    <MenuItem key={course.id} value={course.id}>
+      {course.name}
+    </MenuItem>
+  ))}
+</Select>
+
   {currentNote.content.map((block, index) => (
     <div key={index}>
       {block.type === 'text' && (
@@ -292,10 +280,20 @@ const InstructorNotes = () => {
   ))}
 </DialogContent>
 
+
+
+
+
+
+
 <DialogActions>
   <Button onClick={handleClose}>Cancel</Button>
-  {!viewing && <Button onClick={handleSave}>{editing ? 'Save' : 'Upload'}</Button>}
+  <Button variant="contained" color="primary" onClick={handleUpload}>
+  Upload
+</Button>
 </DialogActions>
+
+
 
           </Dialog>
 
@@ -306,10 +304,10 @@ const InstructorNotes = () => {
                 Are you sure you want to delete this note?
               </DialogContentText>
             </DialogContent>
-            <DialogActions>
+            {/* <DialogActions>
               <Button onClick={handleDeleteConfirmationClose}>Cancel</Button>
               <Button onClick={confirmDelete} color="error">Delete</Button>
-            </DialogActions>
+            </DialogActions> */}
           </Dialog>
         </Container>
       </Box>
