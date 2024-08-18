@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import jsPDF from 'jspdf'; // Import jsPDF
 import DownloadButton from '../DownloadButton'; // Adjust the import path if needed
 import SummarizeButton from '../SummarizeButton'; // Adjust the import path if needed
 
@@ -43,31 +44,61 @@ const Notes = () => {
     }
   }, [courseId, courseName]);
 
-  // const handleDownloadPDF = (noteId) => {
-  //   // Logic for downloading PDF
-  //   alert(`Downloading PDF for note ID: ${noteId}`);
-  // };
-
+  const handleDownloadPDF = (note) => {
+    const { title, content } = note;
   
-
-  const handleDownloadPDF = (noteId) => {
-    // Replace with your actual static file URL
-    const pdfUrl = `http://localhost:3000/notes/${noteId}.pdf`; // Update if using Express
+    // Create a new jsPDF instance
+    const doc = new jsPDF();
   
-    // Create a link element
-    const link = document.createElement('a');
-    link.href = pdfUrl;
-    link.setAttribute('download', `note_${noteId}.pdf`);
+    // Define colors
+    const titleColor = [0, 102, 204]; // Blue color for title
+    const contentColor = [0, 0, 0]; // Light blue color for content
+    const borderColor = [200, 220, 255]; // Light blue border color
   
-    // Append link to the body and trigger download
-    document.body.appendChild(link);
-    link.click();
-    
-    // Clean up
-    link.remove();
+    // Set title font and color
+    doc.setFontSize(20);
+    doc.setFont("Helvetica", "bold");
+    doc.setTextColor(...titleColor);
+  
+    // Add title with background color and border
+    const titleWidth = doc.getTextWidth(title);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const titleX = (pageWidth - titleWidth) / 2; // Center title
+  
+    // Draw title background
+    doc.setFillColor(...borderColor);
+    doc.rect(titleX - 10, 15, titleWidth + 20, 20, 'F');
+  
+    // Add title text
+    doc.text(title, titleX, 25);
+  
+    // Set font and color for content
+    doc.setFontSize(12);
+    doc.setFont("Helvetica", "normal");
+    doc.setTextColor(...contentColor);
+  
+    // Add content
+    const margins = { top: 50, left: 20 };
+    const contentX = margins.left;
+    let contentY = margins.top;
+  
+    // Split content into lines that fit the page width
+    const lines = doc.splitTextToSize(content, pageWidth - margins.left * 2);
+  
+    // Add each line to the PDF, ensuring it fits within the margins
+    lines.forEach((line) => {
+      if (contentY > doc.internal.pageSize.height - margins.top) {
+        doc.addPage();
+        contentY = margins.top;
+      }
+      doc.text(line, contentX, contentY);
+      contentY += 10; // Adjust line height
+    });
+  
+    // Save the PDF
+    doc.save(`${title}.pdf`);
   };
-  
-  
+
   const handleSummarize = (noteId) => {
     // Logic for summarizing
     alert(`Summarizing note ID: ${noteId}`);
@@ -125,7 +156,7 @@ const Notes = () => {
                     <SummarizeButton onClick={() => handleSummarize(note._id)} />
                   </Box>
                   <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
-                    <DownloadButton onClick={() => handleDownloadPDF(note._id)} />
+                    <DownloadButton onClick={() => handleDownloadPDF(note)} />
                   </Box>
                   
                   <Typography variant="h6" component="div">

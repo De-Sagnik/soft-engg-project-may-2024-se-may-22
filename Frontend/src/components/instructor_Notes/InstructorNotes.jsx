@@ -7,7 +7,7 @@ import LinkIcon from '@mui/icons-material/Link';
 import InstructorSidenav from '../InstructorSidenav';
 import { FormControl, InputLabel } from '@mui/material'; // Add this line
 
-const drawerWidth = 240;
+const drawerWidth = 0;
 
 const InstructorNotes = () => {
 const [open, setOpen] = useState(false);
@@ -46,10 +46,6 @@ const handleUpload = () => {
       // Handle error (e.g., show an error message to the user)
     });
 };
-
-
-
-
 
   useEffect(() => {
     axios.get("http://localhost:8000/course/getall")
@@ -179,7 +175,7 @@ const handleUpload = () => {
         <>
             <InstructorSidenav/>
             <Box component="main"
-                 sx={{flexGrow: 1, p: 3, ml: {sm: `${drawerWidth}px`}, display: 'flex', justifyContent: 'center'}}>
+                 sx={{flexGrow: 0, p: 0, ml: {sm: `${drawerWidth}px`}, display: 'flex', justifyContent: 'left'}}>
                 <Container>
                     <Button variant="contained" color="primary" onClick={handleClickOpen}>+ Upload Notes</Button>
                     <Box mt={2}>
@@ -240,8 +236,6 @@ const handleUpload = () => {
     ))}
   </Select>
 </FormControl>
-
-
                             {currentNote.content.map((block, index) => (
                                 <div key={index}>
                                     {block.type === 'text' && (
