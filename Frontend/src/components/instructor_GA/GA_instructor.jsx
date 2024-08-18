@@ -69,22 +69,7 @@ const Instructor = () => {
     
   };
 
-  // const handleAddQuestion = () => {
-  //   const newQuestion = {
-  //     id: questions.length + 1,
-  //     text: questionText,
-  //     type: questionType,
-  //     options: questionType !== "Numerical" ? options : [],
-  //     correctAnswers: questionType !== "Numerical" ? correctAnswers : null,
-  //     range:
-  //       questionType === "Numerical"
-  //         ? { lower: lowerBound, upper: upperBound }
-  //         : null,
-  //   };
-
-  //   setQuestions([...questions, newQuestion]);
-  //   resetForm();
-  // };
+  
   const isFormValid = () => {
     return (
       questionText &&
@@ -107,10 +92,6 @@ const Instructor = () => {
       q_type: questionType,
       options: questionType !== "Numerical" ? options : [],
       answers: questionType !== "Numerical" ? correctAnswers : null,
-      // range:
-      //   questionType === "Numerical"
-      //     ? { lower: lowerBound, upper: upperBound }
-      //     : null,
       assgn_type: assignmentType,
       course_id: courseId, // Include courseId in the newQuestion object
       week: week, // Include week in the newQuestion object
@@ -120,23 +101,6 @@ const Instructor = () => {
     }
     resetForm();
 
-
-    // class Assignment(BaseModel):
-    // question: str
-    // q_type: QuestionType
-    // options: List[Union[int, str, float]]
-    // answers: List[Union[int, str, float]]
-    // assgn_type: AssignmentType
-    // course_id: str
-    // week: int = Field(ge=0, le=12)
-    // evaluated: bool | None = False
-    // deadline: datetime = Field(..., description="Deadline in ISO format")
-
-   
-    //   .then((res) => {
-    //     console.log(res.data); // Debugging API response
-    //     const sortedMaterials = res.data.sort((a, b) => a.week - b.week);
-    //     setCourseMaterials(sortedMaterial
     console.log(newQuestion)
     axios.post(`http://localhost:8000/assignment/create`, newQuestion, {
       headers: {
@@ -153,13 +117,6 @@ const Instructor = () => {
     });
 };
 
-
-  // const resetForm = () => {
-  //   setQuestionText("");
-  //   setQuestionType("MCQ");
-  //   setOptions([""]);
-  //   setCorrectAnswers([]);
-  // };
 
   const resetForm = () => {
     setQuestionText("");
