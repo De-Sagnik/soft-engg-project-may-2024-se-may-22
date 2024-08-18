@@ -80,7 +80,12 @@ const FlashcardList = () => {
   const [subject, setSubject] = useState("Select a Course");
 
   useEffect(() => {
-    axios.get('http://localhost:8000/flash_card/getall')
+    axios.get('http://localhost:8000/flash_card/getall', {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    })
+    
       .then(res => {
         setFlashcards(res.data);
       })

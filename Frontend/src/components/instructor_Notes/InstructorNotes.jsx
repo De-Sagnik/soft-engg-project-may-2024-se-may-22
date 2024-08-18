@@ -62,7 +62,7 @@ const InstructorNotes = () => {
       course_id: currentNote.course_id, // Maps selected course_id
       title: currentNote.content.find(block => block.type === 'title')?.value || '', // Extracts the title
       content: currentNote.content.find(block => block.type === 'text')?.value || '', // Extracts the paragraph text
-      url: currentNote.content.find(block => block.type === 'link')?.value || null // Extracts the link
+      // url: currentNote.content.find(block => block.type === 'link')?.value || null // Extracts the link
     };
     console.log(newQuestion)
   
@@ -204,7 +204,7 @@ const InstructorNotes = () => {
             <DialogTitle>{editing ? 'Edit Note' : viewing ? 'View Note' : 'Upload Note'}</DialogTitle>
             <DialogContent>
   <DialogContentText>
-    {editing ? 'Edit your note details below.' : viewing ? 'View your note details below.' : 'Enter your note details below.'}
+    {editing ? 'Edit your note details below.' : viewing ? 'View your note details below.' : 'Subject'}
   </DialogContentText>
   <Select
   margin="dense"
@@ -263,7 +263,7 @@ const InstructorNotes = () => {
           disabled={viewing} // Disable if viewing
         />
       )}
-      {block.type === 'link' && (
+      {/* {block.type === 'link' && (
         <TextField
           margin="dense"
           label="Link"
@@ -274,7 +274,7 @@ const InstructorNotes = () => {
           onChange={(e) => handleContentChange(index, e.target.value)}
           disabled={viewing} // Disable if viewing
         />
-      )}
+      )} */}
       {/* Handle other block types here */}
     </div>
   ))}

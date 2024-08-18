@@ -45,13 +45,15 @@ const CourseInstructor = () => {
     const newTestCase = {
       input: testCaseInput,
       output: expectedOutput,
-      public: isPublic,
+      isPublic: isPublic,  // Renamed from 'public' to 'isPublic'
     };
     setTestCases([...testCases, newTestCase]);
     setTestCaseInput("");
     setExpectedOutput("");
     setIsPublic(false);
   };
+  
+  
 
   // const handleQuestionSubmit = () => {
   //   const newAssignment = {
@@ -65,43 +67,47 @@ const CourseInstructor = () => {
   // };
 
   const handleQuestionSubmit = () => {
-    // Example values for language and assgn_type
-  
     // Separate public and private test cases
-    const public_testcase = testCases.filter(testCase => testCase.public);
-    const private_testcase = testCases.filter(testCase => !testCase.private);
+    const public_testcase = testCases
+      .filter((testCase) => testCase.isPublic)
+      .map(({ isPublic, ...rest }) => rest); // Remove the 'isPublic' key
+  
+    const private_testcase = testCases
+      .filter((testCase) => !testCase.isPublic)
+      .map(({ isPublic, ...rest }) => rest); // Remove the 'isPublic' key
   
     const newAssignment = {
       question: question,
       language: language,
       public_testcase: public_testcase,
       private_testcase: private_testcase,
-      assgn_type: 'GrPA',//GrPA
-      course_id: 'CS3001',
+      assgn_type: "GrPA",
+      course_id: "CS3001",
       week: week,
       evaluated: false,
       deadline: deadline ? deadline.toISOString() : null,
     };
   
     console.log("Assignment Submitted: ", newAssignment);
-
-    console.log(newAssignment)
-
-    axios.post(`http://localhost:8000/coding_assignment/create_programming_question`, newAssignment, {
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token')
-      }
-    })
-    .then(response => {
-      console.log("Assignment added successfully:", response.data);
-      // Handle success (e.g., clear form fields or update UI)
-    })
-    .catch(error => {
-      console.error("Error adding assignment:", error);
-      // Handle error (e.g., show an error message to the user)
-    });
-
+  
+    axios
+      .post(
+        `http://localhost:8000/coding_assignment/create_programming_question`,
+        newAssignment,
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      )
+      .then((response) => {
+        console.log("Assignment added successfully:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error adding assignment:", error);
+      });
   };
+  
   
 
     // class ProgrammingAssignment(BaseModel):
@@ -231,6 +237,20 @@ const CourseInstructor = () => {
                 />
               </Grid>
 
+              <Grid item xs={12}>
+  <FormControlLabel
+    control={
+      <Checkbox
+        checked={isPublic}
+        onChange={(e) => setIsPublic(e.target.checked)}
+        color="primary"
+      />
+    }
+    label="Public Test Case"
+  />
+</Grid>
+
+
   
               <Grid item xs={12}>
                 <Button
@@ -256,10 +276,10 @@ const CourseInstructor = () => {
                       <Typography>
                         <strong>Expected Output:</strong> {testCase.output}
                       </Typography>
-                      {/* <Typography>
+                      <Typography>
                         <strong>Public:</strong>{" "}
                         {testCase.public ? "Yes" : "No"}
-                      </Typography> */}
+                      </Typography>
                     </CardContent>
                   </Card>
                 ))}
