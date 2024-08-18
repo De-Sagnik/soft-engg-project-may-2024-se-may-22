@@ -29,6 +29,10 @@ async def create_course(
     else:
         raise AlreadyExistsError()
 
+@course.get("/getall", responses=responses)
+async def get_courses():
+    courses = db.course.find()
+    return objectsEntity(courses)
 
 @course.get("/get/{course_id}", responses=responses)
 async def get_course(
