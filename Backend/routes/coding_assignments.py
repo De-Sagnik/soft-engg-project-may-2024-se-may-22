@@ -23,17 +23,18 @@ async def create_programming_question(
         return {"msg": "success", "db_entry_id": str(assignment_in.inserted_id)}
     raise AlreadyExistsError()
     
-@coding_assignment.get('/get/{assgn_id}', responses=responses)
-async def get_coding_assignment(assgn_id: str, current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])]):
-    try: 
-        ObjectId(assgn_id)
-    except:
-        raise HTTPException(status_code=422, detail="Invalid assignment id")
-    
-    find = db.coding_assignment.find_one(filter={'_id': ObjectId(assgn_id)})
-    if find:
-        return objectEntity(find)
-    raise NotExistsError()
+@coding_assignment.get('/get', responses=responses)
+async def get_coding_assignment(week: int, course_id: str, current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])]):
+    try:
+        find = db.coding_assignment.find_one({"course_id": course_id, "week": week})
+        if find:
+            return objectEntity(find)  # Convert the MongoDB document to JSON serializable format
+        else:
+            raise NotExistsError()
+    except NotExistsError:
+        raise HTTPException(status_code=404, detail="Assignment not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
 @coding_assignment.delete('/delete/{assgn_id}', responses=responses)
 async def delete_coding_assignment(assgn_id: str, current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])]):

@@ -20,91 +20,44 @@ const FlashcardGenerateButton = () => {
   );
 };
 
-// function handleChange(e){
-//     e.preventDefault()
-
-const SAMPLE_FLASHCARDS = [
-  {
-    id: 1,
-    subject: "Biology",
-    question: "Mitochondria",
-    answer:
-      'Mitochondria are membrane-bound organelles present in the cytoplasm of all eukaryotic cells that produce adenosine triphosphate (ATP), the main energy molecule used by the cell. They are known as the "Powerhouse of the cell.',
-  },
-  {
-    id: 2,
-    question: "Mitochondrial Disorders",
-    subject: "Biology",
-    answer: "Alpers Disease, Barth Syndrome, and Kearns-Sayre syndrome (KSS)",
-  },
-  {
-    id: 2,
-    question: "Functions of Mitochondria",
-    subject: "Biology",
-    answer:
-      "Beyond energy production, mitochondria regulate metabolism, promote cell growth and multiplication, detoxify ammonia in liver cells, facilitate apoptosis, build blood and hormones, maintain calcium levels, and are involved in cellular differentiation, signaling, senescence, and cell cycle control.",
-  },
-  {
-    id: 2,
-    question: "Structure of Mitochondria",
-    subject: "Biology",
-    answer:
-      "he mitochondrion is a double-membraned, rod-shaped structure found in both plant and animal cells, ranging from 0.5 to 1.0 micrometre in diameter. ",
-  },
-  {
-    id: 2,
-    question: "What is 2+2?",
-    subject: "Math",
-    answer: "4",
-  },
-  {
-    id: 3,
-    question: "Colors?",
-    answer: "VIBGYOR",
-    subject: "Computer Science",
-  },
-  {
-    id: 4,
-    question: "What is a Membrane?",
-    subject: "English",
-    answer:
-      "A membrane is a selective barrier; it allows some things to pass through but stops others. Such things may be molecules, ions, or other small particles. Membranes can be generally classified into synthetic membranes and biological membranes.",
-  },
-];
-
-// }
-
 const FlashcardList = () => {
   const [flashcards, setFlashcards] = useState([]);
   const [allCourses, setAllCourses] = useState({});
   const [subject, setSubject] = useState("Select a Course");
 
   useEffect(() => {
-    axios.get('http://localhost:8000/flash_card/getall', {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/coding_assignment/get`, {
+        params: {
+            week: 6,
+            course_id: "CS3001"
+        },
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
     })
-    
-      .then(res => {
-        setFlashcards(res.data);
-      })
-      .catch(err => {
-        console.error("Error fetching flashcards:", err);
-      });
-  }, []);
+    .then((res) => {
+        console.log("Response:", res.data);
+        setAssignment(res.data);
+    })
+    .catch(err => {
+        console.error("Error fetching programming assignment:", err.response);
+        alert("Error fetching programming assignment. Please check the console for details.");
+    });
+}, []);
+  
 
   useEffect(() => {
-    axios.get("http://localhost:8000/course/getall")
+    axios
+      .get("http://localhost:8000/course/getall")
       .then((res) => {
         const courses = {};
-        res.data.forEach(course => {
+        res.data.forEach((course) => {
           courses[course.course_id] = course.course_name;
         });
         setAllCourses(courses);
       })
-      .catch(err => {
-        console.error("Error fetching courses:", err);
+      .catch((err) => {
+        alert("Error fetching courses:", err);
       });
   }, []);
 
@@ -155,9 +108,7 @@ const FlashcardList = () => {
           {flashcards
             .filter((card) => card.course_id === subject)
             .map((flashcard) => {
-              return (
-                <Flashcard flashcard={flashcard} key={flashcard.id} />
-              );
+              return <Flashcard flashcard={flashcard} key={flashcard.id} />;
             })}
         </div>
       </div>
