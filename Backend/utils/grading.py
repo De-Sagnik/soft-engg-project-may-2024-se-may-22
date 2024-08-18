@@ -16,7 +16,7 @@ def get_coding_assignments(course_id):
     return objectsEntity(db.coding_assignment.find({"$and": [{"course_id": course_id}, {"assgn_type": "GrPA"}]}))
 
 def evaluate_assignment(assignment, course_registered_users):
-    if not assignment['evaluated'] and datetime.now(timezone.utc) > datetime(assignment['deadline']):
+    if not bool(assignment['evaluated']) and datetime.now() > datetime.fromisoformat(assignment['deadline']):
         for user in course_registered_users:
             user_id = user['user_id']
             submission = db.submission.find_one({"user_id": user_id, "assgn_id": ObjectId(assignment['_id'])})
@@ -27,7 +27,7 @@ def evaluate_assignment(assignment, course_registered_users):
         db.assignment.update_one({"_id": ObjectId(assignment['_id'])}, {"$set": {"evaluated": True}})
 
 def evaluate_coding_assignment(coding_assignment, course_registered_users):
-    if not coding_assignment['evaluated'] and datetime.now(timezone.utc) > datetime(coding_assignment['deadline']):
+    if not bool(coding_assignment['evaluated']) and datetime.now() > datetime.fromisoformat(coding_assignment['deadline']):
         private_test_cases = [testcase['output'] for testcase in coding_assignment['private_testcase']]
         for user in course_registered_users:
             user_id = user['user_id']
