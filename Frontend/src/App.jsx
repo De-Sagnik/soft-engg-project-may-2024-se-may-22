@@ -10,16 +10,18 @@ import FlashcardList from "./components/Flashcard/FlashcardList";
 import InstructorNotes from "./components/instructor_Notes/InstructorNotes.jsx";
 import Login from "./components/Login/Login";
 import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
+import CourseSelectPage from "./components/course/course";
 
 const App = () => {
     return (
         <PrimeReactProvider>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/" exact element={<Notes/>}/>
+                    <Route path="/" exact element={<CourseSelectPage/>}/>
+                    <Route path="/course/:courseId" exact element={<Notes/>}/>
                     <Route path="/notes/:courseId/:courseName" element={<Notes/>}/>
                     <Route path="/assignment" exact element={<Assignment/>}></Route>
-                    <Route path="/code" exact element={<Code/>}></Route>
+                    <Route path="/course/:courseId/code" exact element={<Code/>}></Route>
                     <Route path="/flashcard" exact element={<FlashcardList/>}/>
                     <Route
                         path="/instructor/code"

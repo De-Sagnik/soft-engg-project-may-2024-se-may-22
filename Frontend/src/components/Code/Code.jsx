@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, {useState, useRef, useEffect} from "react";
 import Sidenav from "../Sidenav";
 import {
   Typography,
@@ -13,23 +13,45 @@ import Editor from "@monaco-editor/react";
 import questions from "./Questions";
 import axios from "axios";
 import base64 from "base-64";
-
-const files = {
-  "script.py": {
-    name: "script.py",
-    language: "python",
-    value: "# some comment",
-  },
-  "index.html": {
-    name: "index.html",
-    language: "html",
-    value: "<!-- some comment -->",
-  },
-};
+import {Dropdown} from "primereact/dropdown";
+import {useParams} from "react-router-dom";
 
 const Code = () => {
+  const params = useParams()
+  const [courses, setCourses] = useState([]);
+  const courseId = params.courseId
+  useEffect(() => {
+    console.log(courseId)
+    axios.get(process.env.REACT_APP_BACKEND_URL + `course/get_all_assignment?course_id=${courseId}&assgn_type=GrPA`, {headers:
+    {
+      Authorization: "Bearer " + localStorage.getItem("token"),
+    }
+  })
+        .then((res) => {
+          setCourses(res.data)
+          console.log(courses)
+        })
+        .catch(err => {
+          console.error("Error fetching courses:", err);
+        });
+  }, []);
+
+  const [selectedAssignment, setSelectedCourse] = useState(null);
+
+  const setID = (id) => {
+    console.log(id)
+    window.open('/course/' + id, '_self')
+  }
+
+  return (
+      <div className="card flex justify-content-center">
+        <Dropdown value={selectedAssignment} onChange={(e) => setSelectedCourse(e.value.id)} options={courses}
+                  optionLabel="course_name"
+                  placeholder="Select a Course" className="w-full md:w-14rem" checkmark={true}
+                  highlightOnSelect={false}/>
+      </div>
+  )
   const [fileName, setFileName] = useState("script.py");
-  const file = files[fileName];
   const editorRef = useRef(null);
 
   const [selectedQuestion, setSelectedQuestion] = useState(questions[0]);
@@ -116,7 +138,7 @@ const Code = () => {
                 <Typography variant="subtitle1" style={{ marginTop: "10px" }}>
                   Public Test Cases:
                 </Typography>
-                {selectedQuestion.testCases.map((testCase, index) => (
+                {selectedQuestion.examples.map((testCase, index) => (
                   <Card key={index} style={{ marginTop: "10px" }}>
                     <CardContent>
                       <Typography>
@@ -137,18 +159,6 @@ const Code = () => {
           <Grid item xs={12} md={6}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <Button
-                  variant="outlined"
-                  onClick={() => setFileName("script.py")}
-                >
-                  Switch to script.py
-                </Button>
-                <Button
-                  variant="outlined"
-                  onClick={() => setFileName("index.html")}
-                >
-                  Switch to index.html
-                </Button>
                 <Button variant="contained" onClick={runCode}>
                   Run Code
                 </Button>
@@ -161,9 +171,6 @@ const Code = () => {
                       width="100%"
                       theme="vs-light"
                       onMount={handleEditorDidMount}
-                      path={file.name}
-                      defaultLanguage={file.language}
-                      defaultValue={file.value}
                     />
                   </CardContent>
                 </Card>
