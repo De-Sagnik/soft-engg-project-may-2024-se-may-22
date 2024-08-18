@@ -1,43 +1,136 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 import Sidenav from "../Sidenav";
-import { Box, Typography, Container, Paper, Link } from '@mui/material';
-import DownloadButton from '../DownloadButton'
-import BiologyContent from './Content/BiologyContent'
-import SummarizeButton from '../SummarizeButton';
+import {
+  Typography,
+  Box,
+  CircularProgress,
+  Paper,
+  Button,
+  Container,
+} from "@mui/material";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
-const drawerWidth = 240;  // Add this line to define drawerWidth
+const drawerWidth = 240; // Define drawerWidth
 
-const Biology = () => {
-    const handleDownloadPDF = () => {
-      // Logic for downloading PDF
-      alert('Downloading PDF...');
-    };
-    const handleSummarize = () => {
-      // Logic for downloading PDF
-      alert('Summarizing...');
-    };
+const Notes = () => {
+  const { courseId, courseName } = useParams();
+
+  const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (courseId) {
+      axios
+        .get(`http://localhost:8000/notes/get/${courseName}`, {
+          headers: {
+            Authorization: `Bearer ` + localStorage.getItem("token"),
+          },
+        })
+        .then((res) => {
+          setNotes(res.data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setError(err.message);
+          setLoading(false);
+        });
+    } else {
+      setError("Course ID is missing.");
+      setLoading(false);
+    }
+  }, [courseId, courseName]);
+
+  const handleDownloadPDF = (noteId) => {
+    // Logic for downloading PDF specific to the note
+    alert(`Downloading PDF for note ${noteId}...`);
+  };
+
+  const handleSummarize = (noteId) => {
+    // Logic for summarizing specific to the note
+    alert(`Summarizing note ${noteId}...`);
+  };
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <Typography color="error">{error}</Typography>
+      </Box>
+    );
+  }
+
   return (
     <>
       <Sidenav />
-      <Box component="main" sx={{ flexGrow: 1, p: 3, ml: { sm: `${drawerWidth}px` }, display: 'flex', justifyContent: 'center' }}>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          ml: { sm: `${drawerWidth}px` },
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
         <Container>
-          <Paper elevation={3} sx={{ p: 3, position: 'relative'}}>
-            {/* Button positioned top right */}
-            <Box sx={{ position: 'absolute', top: -70, right: -15, m: 2 }}>
-              <SummarizeButton onClick={handleSummarize} />
+          {notes.length === 0 ? (
+            <Typography>No notes available.</Typography>
+          ) : (
+            <Box>
+              {notes.map((note) => (
+                <Paper
+                  key={note._id}
+                  elevation={3}
+                  sx={{
+                    p: 3,
+                    mb: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'relative',
+                    borderRadius: '8px', // Optional: Add rounded corners
+                  }}
+                >
+                  <Typography variant="h6" component="div">
+                    {note.title}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" mt={1}>
+                    {note.content}
+                  </Typography>
+
+                  {/* Buttons positioned at the bottom */}
+                  <Box sx={{ mt: 'auto', display: 'flex', justifyContent: 'space-between' }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleDownloadPDF(note._id)}
+                    >
+                      Download PDF
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => handleSummarize(note._id)}
+                    >
+                      Summarize
+                    </Button>
+                  </Box>
+                </Paper>
+              ))}
             </Box>
-            <Box sx={{ position: 'absolute', top: 0, right: 0, m: 2 }}>
-              <DownloadButton onClick={handleDownloadPDF} />
-            </Box>
-             <BiologyContent />
-          </Paper>
+          )}
         </Container>
       </Box>
     </>
   );
 };
 
-export default Biology;
-
-
-
+export default Notes;
