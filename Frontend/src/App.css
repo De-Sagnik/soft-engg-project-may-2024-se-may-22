@@ -1,6 +1,7 @@
-@tailwind base;
+@import url('tailwindcss/base.css') layer(tw-base);
 @tailwind components;
 @tailwind utilities;
+
 body{
     background-color: white;
 }

@@ -20,6 +20,11 @@
     "base-64": "^1.0.0",
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
+<<<<<<< HEAD
+=======
+    "primeicons": "^7.0.0",
+>>>>>>> 5609b620ddae44c0a446f2d034a5ea7e8c8631ef
+    "primereact": "^10.8.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.24.1",
