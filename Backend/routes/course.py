@@ -124,13 +124,13 @@ async def get_course_week_assignment(
 async def get_course_week_assignment(
     current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])],
     course_id: str,
-    assgn_type: AssignmentType = Query(description="the type of the assignment")
 ):
     course = db.course.find_one({"course_id": course_id})
     if not course:
         raise NotExistsError()
-    collection = db.assignment if assgn_type in ["AQ", "PA", "GrPA"] else db.coding_assignment
+    collection = db.coding_assignment
 
-    results = collection.find({"course_id": course_id, "assgn_type": assgn_type})
+    results = collection.find({"course_id": course_id, "assgn_type": 'GrPA'})
+    results_1  = collection.find({"course_id": course_id, "assgn_type": 'PPA'})
 
-    return [convert_to_serializable(result) for result in results]
+    return [convert_to_serializable(result) for result in results] + [convert_to_serializable(result) for result in results_1]
