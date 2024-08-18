@@ -97,14 +97,14 @@ const Instructor = () => {
       week: week, // Include week in the newQuestion object
       evaluated: false,
       deadline: deadline ? deadline.toISOString() : null
-      
     }
     resetForm();
 
+    
     console.log(newQuestion)
     axios.post(`http://localhost:8000/assignment/create`, newQuestion, {
       headers: {
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkcmlwdG8uMjE1QGdtYWlsLmNvbSIsInNjb3BlcyI6WyJ1c2VyIl0sImV4cCI6MTcyMzk4NjIxNX0.aDMw0_MsSDK412A6rhuDeK73feyNxFBOq0tUradLlFY'
+        Authorization: 'Bearer ' + localStorage.getItem('token')
       }
     })
     .then(response => {
@@ -300,13 +300,6 @@ const Instructor = () => {
               </Box>
             )}
 
-            {/* <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAddQuestion}
-            >
-              Add Question
-            </Button> */}
 
 <Button
   variant="contained"

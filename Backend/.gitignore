@@ -1,0 +1,6 @@
+.env
+my_env
+dummy.py
+**/__pycache__/*
+chroma_db
+.vscode

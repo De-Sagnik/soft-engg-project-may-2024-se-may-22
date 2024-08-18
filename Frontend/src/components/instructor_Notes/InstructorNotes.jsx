@@ -7,6 +7,7 @@ import InstructorSidenav from '../InstructorSidenav';
 
 const drawerWidth = 240;
 
+
 const InstructorNotes = () => {
   const [open, setOpen] = useState(false);
   const [notes, setNotes] = useState([]);
@@ -15,13 +16,89 @@ const InstructorNotes = () => {
   const [viewing, setViewing] = useState(false);
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState(null);
+  const [allCourses, setAllCourses] = useState([]); // State to hold courses
+
 
   const handleClickOpen = () => {
     setOpen(true);
-    setCurrentNote({ id: null, subject: '', content: [] });
+    setCurrentNote({
+      id: null,
+      subject: '',
+      content: [
+        { type: 'text', value: '' },
+        { type: 'title', value: '' },
+        { type: 'link', value: '' },
+        // Add other types as needed
+      ],
+    });
     setEditing(false);
     setViewing(false);
   };
+  
+
+
+  useEffect(() => {
+    axios.get("http://localhost:8000/course/getall")
+      .then((res) => {
+        const courses = {};
+        res.data.forEach(course => {
+          courses[course.course_id] = course.course_name;
+        });
+        setAllCourses(courses);
+      })
+      .catch(err => {
+        console.error("Error fetching courses:", err);
+      });
+  }, []);
+
+  const handleUpload = () => {
+    const newQuestion = {
+      course_id: currentNote.course_id, // Assuming you have this in your state or form
+      title: currentNote.subject,       // Assuming 'subject' is the title in your currentNote
+      content: JSON.stringify(currentNote.content), // Convert content to string if needed
+      url: currentNote.url || null       // Replace with actual url field, defaulting to null if not provided
+    };
+
+    console.log(newQuestion);
+
+    axios.post(`http://localhost:8000/course_material/create`, newQuestion, {
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token')
+      }
+    })
+    .then(response => {
+      console.log("Notes added successfully:", response.data);
+      // Handle success (e.g., clear form fields or update UI)
+    })
+    .catch(error => {
+      console.error("Error adding notes:", error);
+      // Handle error (e.g., show an error message to the user)
+    });
+};
+
+
+    // class Notes(BaseModel):
+  //   course_id: str
+  //   title: str
+  //   content: str
+  //   url: Optional[HttpUrl] = None
+    
+    console.log(newQuestion)
+    axios.post(`http://localhost:8000/course_material/create`, newQuestion, {
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token')
+      }
+    })
+    .then(response => {
+      console.log("Notes added successfully:", response.data);
+      // Handle success (e.g., clear form fields or update UI)
+    })
+    .catch(error => {
+      console.error("Error adding notes:", error);
+      // Handle error (e.g., show an error message to the user)
+    });
+};
+
 
   const handleClose = () => {
     setOpen(false);
@@ -143,123 +220,83 @@ const InstructorNotes = () => {
           <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
             <DialogTitle>{editing ? 'Edit Note' : viewing ? 'View Note' : 'Upload Note'}</DialogTitle>
             <DialogContent>
-              <DialogContentText>
-                {editing ? 'Edit your note details below.' : viewing ? 'View your note details below.' : 'Enter your note details below.'}
-              </DialogContentText>
-              <TextField
-                autoFocus
-                margin="dense"
-                id="subject"
-                label="Subject"
-                type="text"
-                fullWidth
-                variant="standard"
-                value={currentNote.subject}
-                onChange={(e) => setCurrentNote({ ...currentNote, subject: e.target.value })}
-                disabled={viewing}
-              />
-              {currentNote.content.map((block, index) => (
-                <div key={index}>
-                  {block.type === 'text' && (
-                    <TextField
-                      margin="dense"
-                      label="Paragraph"
-                      type="text"
-                      fullWidth
-                      variant="standard"
-                      multiline
-                      rows={4}
-                      value={block.value}
-                      onChange={(e) => handleContentChange(index, e.target.value)}
-                      disabled={viewing}
-                    />
-                  )}
-                  {block.type === 'title' && (
-                    <TextField
-                      margin="dense"
-                      label="Title"
-                      type="text"
-                      fullWidth
-                      variant="standard"
-                      value={block.value}
-                      onChange={(e) => handleContentChange(index, e.target.value)}
-                      disabled={viewing}
-                    />
-                  )}
-                  {block.type === 'subheading' && (
-                    <TextField
-                      margin="dense"
-                      label="Subheading"
-                      type="text"
-                      fullWidth
-                      variant="standard"
-                      value={block.value}
-                      onChange={(e) => handleContentChange(index, e.target.value)}
-                      disabled={viewing}
-                    />
-                  )}
-                  {block.type === 'image' && (
-                    <div>
-                      {block.value ? (
-                        <img src={block.value} alt="Uploaded" style={{ maxWidth: '100%' }} />
-                      ) : (
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleFileChange(index, e)}
-                          disabled={viewing}
-                        />
-                      )}
-                    </div>
-                  )}
-                  {block.type === 'link' && (
-                    <TextField
-                      margin="dense"
-                      label="Link"
-                      type="text"
-                      fullWidth
-                      variant="standard"
-                      value={block.value}
-                      onChange={(e) => handleContentChange(index, e.target.value)}
-                      disabled={viewing}
-                    />
-                  )}
-                  {block.type === 'list' && (
-                    <div>
-                      <Typography variant="subtitle1">List</Typography>
-                      {block.value.map((item, itemIndex) => (
-                        <TextField
-                          key={itemIndex}
-                          margin="dense"
-                          label={`Item ${itemIndex + 1}`}
-                          type="text"
-                          fullWidth
-                          variant="standard"
-                          value={item}
-                          onChange={(e) => handleListItemChange(index, itemIndex, e.target.value)}
-                          disabled={viewing}
-                        />
-                      ))}
-                      {!viewing && <Button variant="text" onClick={() => addListItem(index)}>Add Item</Button>}
-                    </div>
-                  )}
-                </div>
-              ))}
-              {!viewing && (
-                <Box mt={2}>
-                  <Button variant="outlined" startIcon={<AddIcon />} onClick={() => addContentField('title')}>Add Title</Button>
-                  <Button variant="outlined" startIcon={<AddIcon />} onClick={() => addContentField('text')}>Add Paragraph</Button>
-                  <Button variant="outlined" startIcon={<AddIcon />} onClick={() => addContentField('subheading')}>Add Subheading</Button>
-                  <Button variant="outlined" startIcon={<ImageIcon />} onClick={() => addContentField('image')}>Add Image</Button>
-                  <Button variant="outlined" startIcon={<LinkIcon />} onClick={() => addContentField('link')}>Add Link</Button>
-                  <Button variant="outlined" startIcon={<AddIcon />} onClick={() => addContentField('list')}>Add List</Button>
-                </Box>
-              )}
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose}>Cancel</Button>
-              {!viewing && <Button onClick={handleSave}>{editing ? 'Save' : 'Upload'}</Button>}
-            </DialogActions>
+  <DialogContentText>
+    {editing ? 'Edit your note details below.' : viewing ? 'View your note details below.' : 'Enter your note details below.'}
+  </DialogContentText>
+  <TextField
+    autoFocus
+    margin="dense"
+    id="subject"
+    label="Subject"
+    type="text"
+    fullWidth
+    variant="standard"
+    value={currentNote.subject}
+    onChange={(e) => setCurrentNote({ ...currentNote, subject: e.target.value })}
+    disabled={viewing} // Disable if viewing
+  />
+  {currentNote.content.map((block, index) => (
+    <div key={index}>
+      {block.type === 'text' && (
+        <TextField
+          margin="dense"
+          label="Paragraph"
+          type="text"
+          fullWidth
+          variant="standard"
+          multiline
+          rows={4}
+          value={block.value}
+          onChange={(e) => handleContentChange(index, e.target.value)}
+          disabled={viewing} // Disable if viewing
+        />
+      )}
+      {block.type === 'title' && (
+        <TextField
+          margin="dense"
+          label="Title"
+          type="text"
+          fullWidth
+          variant="standard"
+          value={block.value}
+          onChange={(e) => handleContentChange(index, e.target.value)}
+          disabled={viewing} // Disable if viewing
+        />
+      )}
+      {block.type === 'subheading' && (
+        <TextField
+          margin="dense"
+          label="Subheading"
+          type="text"
+          fullWidth
+          variant="standard"
+          value={block.value}
+          onChange={(e) => handleContentChange(index, e.target.value)}
+          disabled={viewing} // Disable if viewing
+        />
+      )}
+      {block.type === 'link' && (
+        <TextField
+          margin="dense"
+          label="Link"
+          type="text"
+          fullWidth
+          variant="standard"
+          value={block.value}
+          onChange={(e) => handleContentChange(index, e.target.value)}
+          disabled={viewing} // Disable if viewing
+        />
+      )}
+      {/* Handle other block types here */}
+    </div>
+  ))}
+</DialogContent>
+
+<DialogActions>
+  <Button onClick={handleClose}>Cancel</Button>
+  {!viewing && <Button onClick={handleSave}>{editing ? 'Save' : 'Upload'}</Button>}
+</DialogActions>
+
           </Dialog>
 
           <Dialog open={deleteConfirmationOpen} onClose={handleDeleteConfirmationClose}>
