@@ -55,7 +55,7 @@ async def get_all_flashcards(current_user: Annotated[User, Security(get_current_
     return objectsEntity(flash_cards)
 
 @user.post('/search_generate')
-async def search_and_generate_response(query: GenerateResponse, current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])]):
+async def search_and_generate_response(query: GenerateResponse):
     find = db.course.find(filter={"course_id": query.course_id})
     if not find:
         raise NotFoundError("Could not find the course")

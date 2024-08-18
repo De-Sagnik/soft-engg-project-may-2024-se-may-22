@@ -81,7 +81,7 @@ const Assignment = () => {
           , {
             headers: {
               Authorization:
-                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkcmlwdG8uMjE1QGdtYWlsLmNvbSIsInNjb3BlcyI6WyJ1c2VyIl0sImV4cCI6MTcyMzk4NjIxNX0.aDMw0_MsSDK412A6rhuDeK73feyNxFBOq0tUradLlFY",
+                `Bearer ` + localStorage.getItem("token"),
             },
           }
         );

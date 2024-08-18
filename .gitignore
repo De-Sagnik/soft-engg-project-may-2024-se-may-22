@@ -26,10 +26,6 @@
 **/yarn-debug.log*
 **/yarn-error.log*
 
-<<<<<<< HEAD
 **/.idea
 
 **/venv/*
-=======
-**/.idea
->>>>>>> 5609b620ddae44c0a446f2d034a5ea7e8c8631ef
