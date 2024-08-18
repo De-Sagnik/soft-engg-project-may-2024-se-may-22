@@ -2,5 +2,5 @@
 **/my_env
 **/__pycache__/*
 **/chroma_db
-.vscode
+**/.vscode
 **/cache
