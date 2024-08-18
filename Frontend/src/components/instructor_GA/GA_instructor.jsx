@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
+import axios from "axios";
 import {
   Container,
   Typography,
@@ -26,11 +28,16 @@ const Instructor = () => {
   const [questions, setQuestions] = useState([]);
   const [questionText, setQuestionText] = useState("");
   const [questionType, setQuestionType] = useState("MCQ");
+  const [allCourses, setAllCourses] = useState({});
+  const [course, setCourse] = useState('');
   const [options, setOptions] = useState([""]);
   const [correctAnswers, setCorrectAnswers] = useState([]);
+  const [assignmentType, setAssignmentType] = useState('');
   const [lowerBound, setLowerBound] = useState("");
   const [upperBound, setUpperBound] = useState("");
   const [deadline, setDeadline] = useState(null);
+  const [week, setWeek] = useState('');
+  const [courseId, setCourseId] = useState(''); 
 
   const handleAddOption = () => {
     setOptions([...options, ""]);
@@ -59,33 +66,126 @@ const Instructor = () => {
         : [...correctAnswers, index];
       setCorrectAnswers(newCorrectAnswers);
     }
+    
   };
+
+  // const handleAddQuestion = () => {
+  //   const newQuestion = {
+  //     id: questions.length + 1,
+  //     text: questionText,
+  //     type: questionType,
+  //     options: questionType !== "Numerical" ? options : [],
+  //     correctAnswers: questionType !== "Numerical" ? correctAnswers : null,
+  //     range:
+  //       questionType === "Numerical"
+  //         ? { lower: lowerBound, upper: upperBound }
+  //         : null,
+  //   };
+
+  //   setQuestions([...questions, newQuestion]);
+  //   resetForm();
+  // };
+  const isFormValid = () => {
+    return (
+      questionText &&
+      questionType &&
+      courseId &&
+      week &&
+      assignmentType &&
+      (questionType === "Numerical"
+        ? lowerBound && upperBound
+        : options.length >= 2 && correctAnswers.length > 0) &&
+      deadline
+    );
+  };
+  
 
   const handleAddQuestion = () => {
     const newQuestion = {
-      id: questions.length + 1,
-      text: questionText,
-      type: questionType,
+      // id: questions.length + 1,
+      question: questionText,
+      q_type: questionType,
       options: questionType !== "Numerical" ? options : [],
-      correctAnswers: questionType !== "Numerical" ? correctAnswers : null,
-      range:
-        questionType === "Numerical"
-          ? { lower: lowerBound, upper: upperBound }
-          : null,
-    };
-
-    setQuestions([...questions, newQuestion]);
+      answers: questionType !== "Numerical" ? correctAnswers : null,
+      // range:
+      //   questionType === "Numerical"
+      //     ? { lower: lowerBound, upper: upperBound }
+      //     : null,
+      assgn_type: assignmentType,
+      course_id: courseId, // Include courseId in the newQuestion object
+      week: week, // Include week in the newQuestion object
+      evaluated: false,
+      deadline: deadline ? deadline.toISOString() : null
+      
+    }
     resetForm();
-  };
+
+
+    // class Assignment(BaseModel):
+    // question: str
+    // q_type: QuestionType
+    // options: List[Union[int, str, float]]
+    // answers: List[Union[int, str, float]]
+    // assgn_type: AssignmentType
+    // course_id: str
+    // week: int = Field(ge=0, le=12)
+    // evaluated: bool | None = False
+    // deadline: datetime = Field(..., description="Deadline in ISO format")
+
+   
+    //   .then((res) => {
+    //     console.log(res.data); // Debugging API response
+    //     const sortedMaterials = res.data.sort((a, b) => a.week - b.week);
+    //     setCourseMaterials(sortedMaterial
+    console.log(newQuestion)
+    axios.post(`http://localhost:8000/assignment/create`, newQuestion, {
+      headers: {
+        Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkcmlwdG8uMjE1QGdtYWlsLmNvbSIsInNjb3BlcyI6WyJ1c2VyIl0sImV4cCI6MTcyMzk4NjIxNX0.aDMw0_MsSDK412A6rhuDeK73feyNxFBOq0tUradLlFY'
+      }
+    })
+    .then(response => {
+      console.log("Question added successfully:", response.data);
+      // Handle success (e.g., clear form fields or update UI)
+    })
+    .catch(error => {
+      console.error("Error adding question:", error);
+      // Handle error (e.g., show an error message to the user)
+    });
+};
+
+
+  // const resetForm = () => {
+  //   setQuestionText("");
+  //   setQuestionType("MCQ");
+  //   setOptions([""]);
+  //   setCorrectAnswers([]);
+  // };
 
   const resetForm = () => {
     setQuestionText("");
     setQuestionType("MCQ");
     setOptions([""]);
     setCorrectAnswers([]);
-    setLowerBound("");
-    setUpperBound("");
+    setAssignmentType('');
+    setCourseId('');
+    setWeek('');
+    setDeadline(null);
   };
+  
+
+  useEffect(() => {
+    axios.get("http://localhost:8000/course/getall")
+      .then((res) => {
+        const courses = {};
+        res.data.forEach(course => {
+          courses[course.course_id] = course.course_name;
+        });
+        setAllCourses(courses);
+      })
+      .catch(err => {
+        console.error("Error fetching courses:", err);
+      });
+  }, []);
 
   return (
     <Container>
@@ -127,10 +227,56 @@ const Instructor = () => {
               >
                 <MenuItem value="MCQ">MCQ</MenuItem>
                 <MenuItem value="MSQ">MSQ</MenuItem>
-                <MenuItem value="Numerical">Numerical</MenuItem>
+                {/* <MenuItem value="Numerical">Numerical</MenuItem> */}
               </Select>
-            </FormControl>
+              </FormControl>
 
+
+              <FormControl variant="outlined" fullWidth style={{ marginBottom: "16px" }}>
+          <InputLabel>Subject</InputLabel>
+          <Select
+            value={courseId}
+            onChange={(e) => setCourseId(e.target.value)} // Update courseId on selection
+            label="Subject"
+          >
+            {Object.entries(allCourses).map(([id, name]) => (
+              <MenuItem key={id} value={id}>
+                {name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl variant="outlined" fullWidth style={{ marginBottom: "16px" }}>
+          <InputLabel>Week</InputLabel>
+          <Select
+            value={week}
+            onChange={(e) => setWeek(e.target.value)} // Update week on selection
+            label="Week"
+          >
+            {Array.from({ length: 12 }, (_, i) => i + 1).map((weekNumber) => (
+              <MenuItem key={weekNumber} value={weekNumber}>
+                {weekNumber}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl variant="outlined" fullWidth style={{ marginBottom: "16px" }}>
+          <InputLabel>Assignment Type</InputLabel>
+          <Select
+            value={assignmentType}
+            onChange={(e) => setAssignmentType(e.target.value)}
+            label="Assignment Type"
+          >
+            <MenuItem value="AQ">AQ</MenuItem>
+            <MenuItem value="PA">PA</MenuItem>
+            <MenuItem value="GA">GA</MenuItem>
+            <MenuItem value="PPA">PPA</MenuItem>
+            <MenuItem value="GrPA">GrPA</MenuItem>
+          </Select>
+        </FormControl>
+  
             {questionType !== "Numerical" && (
               <>
                 {options.map((option, index) => (
@@ -197,13 +343,33 @@ const Instructor = () => {
               </Box>
             )}
 
-            <Button
+            {/* <Button
               variant="contained"
               color="primary"
               onClick={handleAddQuestion}
             >
               Add Question
-            </Button>
+            </Button> */}
+
+<Button
+  variant="contained"
+  color="primary"
+  onClick={handleAddQuestion}
+  disabled={!isFormValid()}
+>
+  Add Question
+</Button>
+
+
+
+
+{!isFormValid() && (
+  <Typography color="error" variant="body2" style={{ marginTop: "16px" }}>
+    Please fill in all required fields and ensure options are correctly set before adding the question.
+  </Typography>
+)}
+
+
           </CardContent>
         </Card>
 
@@ -246,3 +412,5 @@ const Instructor = () => {
 };
 
 export default Instructor;
+
+
