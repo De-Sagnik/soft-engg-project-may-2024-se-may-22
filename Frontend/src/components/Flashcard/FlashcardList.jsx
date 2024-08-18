@@ -4,7 +4,7 @@ import { Typography } from "@mui/material";
 import Flashcard from "./Flashcard";
 import { Button, FormControl, Select, MenuItem } from "@mui/material";
 // import FlashcardGenerateButton from '../FlashcardGenerateButton'
-import "../../app.css";
+import "../../App.css";
 import axios from "axios";
 import { Box } from "@mui/material";
 
