@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from "react";
 import Sidenav from "../Sidenav";
-import {MenuItem, Select} from "@mui/material";
 import Flashcard from "./Flashcard";
-// import FlashcardGenerateButton from '../FlashcardGenerateButton'
 import "../../App.css";
 import axios from "axios";
 import {IconField} from "primereact/iconfield";
@@ -10,7 +8,6 @@ import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {generate_flashcard} from "./generate";
 import {useParams} from "react-router-dom";
-import GenAI from "../GenAI/GenAI";
 
 const FlashcardList = () => {
     const params = useParams()
@@ -88,8 +85,6 @@ const FlashcardList = () => {
                 <div><Button className="my-auto ml-2" color="primary" onClick={handleGenerate}>
                     Generate
                 </Button></div>
-
-                <GenAI context="" week={12}/>
             </div>
 
 

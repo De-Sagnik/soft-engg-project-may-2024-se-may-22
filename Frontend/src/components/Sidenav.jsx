@@ -158,19 +158,13 @@ const Sidenav = () => {
                 <Divider/>
                 <List>
                     <ListItem disablePadding>
-                        <ListItemButton>
-                            <ListItemIcon><CheckIcon/></ListItemIcon>
-                            <ListItemText primary={allCourses[courseId]}/>
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem disablePadding>
-                        {/* <ListItemButton
+                        <ListItemButton
                             onClick={() => {
                                 handleNavigation(paths.Notes(courseId))
                             }}>
                             <ListItemIcon><NotesIcon/></ListItemIcon>
-                            <ListItemText primary="Notes"/>
-                        </ListItemButton> */}
+                            <ListItemText primary={allCourses[courseId]}/>
+                        </ListItemButton>
                     </ListItem>
                     <ListItem disablePadding>
                         <ListItemButton

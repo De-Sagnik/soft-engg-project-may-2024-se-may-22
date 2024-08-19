@@ -33,11 +33,13 @@ const GenAI = ( {week, context} ) => {
 
     return (
         <>
-            <Button icon="pi pi-arrow-left" onClick={() => setVisibleRight(true)} />
+            <Button variant="contained" onClick={() => setVisibleRight(true)}>
+                Ask AI
+            </Button>
             <Sidebar visible={visibleRight} position="right" onHide={() => setVisibleRight(false)} className="w-96">
                 <div className="flex flex-col justify-between h-full">
                     <div>
-                        <p className="mb-2">Write a query to get context based reply {loading? <i className="pi pi-spin pi-spinner mt-1" style={{ fontSize: 'rem' }}></i>: ''} </p>
+                        <p className="mb-2">Write a query to get AI reply {loading? <i className="pi pi-spin pi-spinner mt-1" style={{ fontSize: 'rem' }}></i>: ''} </p>
                         <p className="text-sm text-justify">
                             {text}
                         </p>

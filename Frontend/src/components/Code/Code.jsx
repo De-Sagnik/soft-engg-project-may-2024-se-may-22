@@ -5,6 +5,7 @@ import Editor from "@monaco-editor/react";
 import axios from "axios";
 import base64 from "base-64";
 import {useParams} from "react-router-dom";
+import GenAI from "../GenAI/GenAI";
 
 const Code = () => {
     const params = useParams()
@@ -178,11 +179,16 @@ const Code = () => {
                     {/* Right side: Code Editor */}
                     <Grid item xs={12} md={6}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12}>
+                            <div className="flex align-middle gap-2 justify-center">
                                 <Button variant="contained" onClick={runCode}>
                                     Run Code
                                 </Button>
-                            </Grid>
+                                <GenAI
+                                    context={'<|system|> USe the following context to give response \n Question \n' + currentAssignment.question + '\n Code \n' + code + '\n User Query \n'}
+                                    week={12}/>
+                            </div>
+
+
                             <Grid item xs={12}>
                                 <Card>
                                     <CardContent>
