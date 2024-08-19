@@ -10,18 +10,18 @@ import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {generate_flashcard} from "./generate";
 import {useParams} from "react-router-dom";
+import GenAI from "../GenAI/GenAI";
 
 const FlashcardList = () => {
     const params = useParams()
     const courseId = params.courseId;
     const [flashcards, setFlashcards] = useState([]);
-    const [subject, setSubject] = useState("Select a Course");
     const [value, setValue] = useState("");
 
 
     const handleGenerate = () => {
         console.log("Generating flashcards...", value);
-        generate_flashcard(value, subject).then(() => {
+        generate_flashcard(value, courseId).then(() => {
             getFlashCards();
         });
     };
@@ -77,11 +77,6 @@ const FlashcardList = () => {
                 console.error("Error fetching courses:", err);
             });
     }, []);
-
-    const handleChange = (event) => {
-        setSubject(event.target.value);
-    };
-
     return (
         <>
             <Sidenav/>
@@ -94,12 +89,15 @@ const FlashcardList = () => {
                 <div><Button className="my-auto ml-2" color="primary" onClick={handleGenerate}>
                     Generate
                 </Button></div>
+
+                <GenAI/>
             </div>
+
 
             <div className="container">
                 <div className="card-grid" align="center">
                     {flashcards
-                        .filter((card) => card.course_id === subject)
+                        .filter((card) => card.course_id === courseId)
                         .map((flashcard) => {
                             return (
                                 <Flashcard flashcard={flashcard} key={flashcard.id}/>
