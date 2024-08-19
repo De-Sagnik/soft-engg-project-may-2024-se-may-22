@@ -110,7 +110,7 @@ const Notes = () => {
 
 const handleSummarize = async (noteId, noteContent) => {
   try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/summarize`, { text: noteContent });
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}summarize`, { text: noteContent });
       // Update the note with the returned summary
       setNotes((prevNotes) => 
           prevNotes.map(note => 
@@ -121,6 +121,7 @@ const handleSummarize = async (noteId, noteContent) => {
       console.error("Error summarizing note:", error);
   }
 };
+
 
 
 

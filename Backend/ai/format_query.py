@@ -6,6 +6,7 @@ collection_name = "CourseMaterialRAG"
 
 embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
 db = Chroma(persist_directory="../chroma_db", embedding_function=embeddings)
+db._client.heartbeat()
 def vectorSearch(course_id, week_lte, query):
     res = db.similarity_search(
         query=query,
@@ -20,8 +21,8 @@ def format_query(query, week, course_id):
     model_query = '''
 <|system|>
 Answer the question based on your knowledge. Please follow the following rules:
-1. If you don't find something in context, don't try to make up an answer.
-2. If you find the answer, write the answer in a concise way with five sentences maximum.
+1. If you don't find something in context, don't try to make up an answer. Return None
+2. If you find the answer, write the answer in a concise way with two sentences maximum.Format: answer
 <|question|>
     
     '''
@@ -39,10 +40,10 @@ def format_query_flashcard(query, week, course_id):
     docs = vectorSearch(course_id, week, query)
     model_query = '''
 <|system|>
-Generate Definition from the following use the context to help. Please follow the following rules:
-1. If you don't find something in context, don't try to make up an answer.
+Generate Flashcard from the following use the context to help. Please follow the following rules:
+1. If you don't find something in context, don't try to make up an answer. Return None.
 2. If you find the answer, write the answer in a concise way with two sentences maximum.
-
+3. Only give the answer for Back of the flashcard, no other entities. Format: answer
 <|query|>
     '''
     model_query += query + '\n <|context|>\n'

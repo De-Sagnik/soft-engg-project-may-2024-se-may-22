@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import Sidenav from "../Sidenav";
+import {MenuItem, Select} from "@mui/material";
 import Flashcard from "./Flashcard";
 // import FlashcardGenerateButton from '../FlashcardGenerateButton'
 import "../../App.css";
@@ -19,6 +20,7 @@ const FlashcardList = () => {
 
 
     const handleGenerate = () => {
+        console.log("Generating flashcards...", value);
         generate_flashcard(value, courseId).then(() => {
             getFlashCards();
         });

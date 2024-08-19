@@ -19,7 +19,7 @@ model = genai.GenerativeModel('gemini-1.5-flash')
 
 def generate(prompt):
   response = model.generate_content(prompt) 
-  return response.text
+  return response.text.replace("answer:", "")
 
 async def generate_chunks(prompt, websocket: WebSocket):
   response = model.generate_content(prompt, stream= True)
