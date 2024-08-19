@@ -1,23 +1,17 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Sidenav from "../Sidenav";
-import {MenuItem, Select} from "@mui/material";
-import Flashcard from "./Flashcard";
-// import FlashcardGenerateButton from '../FlashcardGenerateButton'
-import "../../App.css";
+import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button";
+import { generate_flashcard } from "./generate";
+import { useParams } from "react-router-dom";
 import axios from "axios";
-import {IconField} from "primereact/iconfield";
-import {InputText} from "primereact/inputtext";
-import {Button} from "primereact/button";
-import {generate_flashcard} from "./generate";
-import {useParams} from "react-router-dom";
-import GenAI from "../GenAI/GenAI";
+import Flashcard from "./Flashcard";
 
 const FlashcardList = () => {
-    const params = useParams()
+    const params = useParams();
     const courseId = params.courseId;
     const [flashcards, setFlashcards] = useState([]);
     const [value, setValue] = useState("");
-
 
     const handleGenerate = () => {
         console.log("Generating flashcards...", value);
@@ -32,67 +26,68 @@ const FlashcardList = () => {
                 Authorization: "Bearer " + localStorage.getItem("token"),
             },
         })
-            .then(res => {
-                setFlashcards(res.data);
-            })
-            .catch(err => {
-                console.error("Error fetching flashcards:", err);
-            });
-    }, []); // This runs once on component mount
-
-
-    const getFlashCards = () => {
-        axios.get('http://localhost:8000/user/flashcards',
-            {
-                headers:
-                    {
-                        Authorization: "Bearer " + localStorage.getItem("token"),
-                    }
-            }
-        )
-            .then(res => {
-                setFlashcards(res.data);
-                console.log(res.data, flashcards);
-            })
-            .catch(err => {
-                console.error("Error fetching flashcards:", err);
-            });
-    }
-
-
-    useEffect(() => {
-        getFlashCards()
+        .then(res => {
+            setFlashcards(res.data);
+        })
+        .catch(err => {
+            console.error("Error fetching flashcards:", err);
+        });
     }, []);
 
+    const getFlashCards = () => {
+        axios.get('http://localhost:8000/user/flashcards', {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("token"),
+            }
+        })
+        .then(res => {
+            setFlashcards(res.data);
+            console.log(res.data, flashcards);
+        })
+        .catch(err => {
+            console.error("Error fetching flashcards:", err);
+        });
+    };
+
+    useEffect(() => {
+        getFlashCards();
+    }, []);
 
     useEffect(() => {
         axios.get("http://localhost:8000/course/getall")
-            .then((res) => {
-                const courses = {};
-                res.data.forEach(course => {
-                    courses[course.course_id] = course.course_name;
-                });
-            })
-            .catch(err => {
-                console.error("Error fetching courses:", err);
+        .then((res) => {
+            const courses = {};
+            res.data.forEach(course => {
+                courses[course.course_id] = course.course_name;
             });
+        })
+        .catch(err => {
+            console.error("Error fetching courses:", err);
+        });
     }, []);
+
     return (
         <>
-            <Sidenav/>
+            <Sidenav />
             <div className="flex align-middle justify-center">
                 <div>
-                    <IconField>
-                        <InputText value={value} onChange={(e) => setValue(e.target.value)}/>
-                    </IconField>
+                    <InputText
+                        value={value}
+                        onChange={(e) => setValue(e.target.value)}
+                        style={{
+                            borderColor: 'initial',
+                            boxShadow: 'none',
+                        }}
+                    />
                 </div>
-                <div><Button className="my-auto ml-2" color="primary" onClick={handleGenerate}>
+                <Button
+                    className="my-auto ml-2 p-button-primary"
+                    style={{ backgroundColor: '#007bff', borderColor: '#007bff' }}
+                    onClick={handleGenerate}
+                >
                     Generate
-                </Button></div>
-
-                <GenAI/>
+                </Button>
             </div>
-
 
             <div className="container">
                 <div className="card-grid" align="center">
@@ -100,7 +95,7 @@ const FlashcardList = () => {
                         .filter((card) => card.course_id === courseId)
                         .map((flashcard) => {
                             return (
-                                <Flashcard flashcard={flashcard} key={flashcard.id}/>
+                                <Flashcard flashcard={flashcard} key={flashcard.id} />
                             );
                         })}
                 </div>
