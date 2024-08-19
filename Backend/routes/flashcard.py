@@ -91,15 +91,21 @@ async def generate_flashcard(
     if not find:
         raise NotFoundError("Could not find the course")
 
+    card = search_generate_flashcard(
+                flashcard_input.course_id, flashcard_input.week, flashcard_input.title
+            )
+    if card.startswith("<|flashcard"):
+        card = ' '.join(card.split(' ')[1:])
+    if card.startswith("<|assistant"):
+        card = ' '.join(card.split(' ')[1:])
+
     _in = db.flashcard.insert_one(
         {
-            "user_email_id": current_user.user_id,
+            "user_id": current_user.user_id,
             "course_id": flashcard_input.course_id,
             "week": flashcard_input.week,
             "title": flashcard_input.title,
-            "content": search_generate_flashcard(
-                flashcard_input.course_id, flashcard_input.week, flashcard_input.title
-            ),
+            "content": card,
         }
     )
 

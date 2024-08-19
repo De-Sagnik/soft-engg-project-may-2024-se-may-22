@@ -17,26 +17,19 @@ const Code = () => {
     const [currentAssignment, setCurrentAssignment] = useState(null);
     const courseId = params.courseId
     useEffect(() => {
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/coding_assignment/get`, {
-            params: {
-                week: 1,
-                course_id: "CS01"
-            },
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-            }
+        axios.get(process.env.REACT_APP_BACKEND_URL + `course/get_all_assignment?course_id=${courseId}`, {
+            headers:
+                {
+                    Authorization: "Bearer " + localStorage.getItem("token"),
+                }
         })
-        .then((res) => {
-            console.log("Response:", res.data);
-            setAssignment(res.data);
-        })
-        .catch(err => {
-            console.error("Error fetching programming assignment:", err.response);
-            alert("Error fetching programming assignment. Please check the console for details.");
-        });
+            .then((res) => {
+                setAssignment(res.data)
+            })
+            .catch(err => {
+                console.error("Error fetching courses:", err);
+            });
     }, []);
-    
-
     const [fileName, setFileName] = useState("script.py");
     const editorRef = useRef(null);
 
@@ -111,7 +104,7 @@ const Code = () => {
                     justifyContent: "center",
                 }}
             >
-                {/* <div className="card flex justify-content-center">
+                <div className="card flex justify-content-center">
                     <Dropdown value={currentAssignment} onChange={(e) => setCurrentAssignment(e.value)}
                               options={assignments} optionLabel="name" placeholder="Select a Country"
                               valueTemplate={selectedCountryTemplate} itemTemplate={countryOptionTemplate}
@@ -121,7 +114,7 @@ const Code = () => {
                                       <ChevronRightIcon {...opts.iconProps} /> :
                                       <ChevronDownIcon {...opts.iconProps} />;
                               }}/>
-                </div> */}
+                </div>
                 <Grid container spacing={2}>
                     {/* Left side: Question */}
                     <Grid item xs={12} md={6}>
@@ -192,10 +185,9 @@ const Code = () => {
                                             theme="vs-light"
                                             onMount={handleEditorDidMount}
                                             handleEditorChange={handleEditorChange}
+                                            language={currentAssignment? currentAssignment.language: 'python'}
                                         />
-
                                     </CardContent>
-
                                 </Card>
                             </Grid>
                             <Button label="Submit" icon="pi pi-check" onClick={() => {console.log("kjhd")}} />

@@ -51,7 +51,8 @@ async def get_flash_card_course_and_week_filter(
 
 @user.get('/flashcards', responses=responses)
 async def get_all_flashcards(current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])]):
-    flash_cards = db.flashcard.find({"user_id": current_user.user_id}, {"title": 1, "content": 1})
+    print(current_user.user_id)
+    flash_cards = db.flashcard.find({"user_id": current_user.user_id})
     return objectsEntity(flash_cards)
 
 @user.post('/search_generate')
