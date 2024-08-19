@@ -29,8 +29,12 @@ const LoginPage = (props) => {
     return (
         <>
             <div className="md:h-36"></div>
-            <div className="max-w-6xl bg-lime-50 m-auto rounded-lg pt-2 md:pb-2 pb-10 px-2">
-                <div className="divide-lime-400 lg:grid lg:grid-cols-2 lg:divide-x">
+            {/* <div className="max-w-6xl bg-lime-50 m-auto rounded-lg pt-2 md:pb-2 pb-10 px-2"> */}
+            <div className="max-w-6xl bg-blue-50 m-auto rounded-lg pt-2 md:pb-2 pb-10 px-2">
+
+                {/* <div className="divide-lime-400 lg:grid lg:grid-cols-2 lg:divide-x"> */}
+                <div className="divide-blue-400 lg:grid lg:grid-cols-2 lg:divide-x">
+
                     <div className="h-96 m-auto flex flex-col align-middle justify-center">
                         <img alt="logo" className="h-48 object-contain" src={require('../../assets/logo.png')}/>
                         <div className="text-xl pt-5 text-center">
@@ -40,11 +44,11 @@ const LoginPage = (props) => {
                     <div className="h-96 ">
                         <div className="flex flex-col align-middle justify-center h-80">
                             <div className="mx-auto text-2xl">
-                                Hi
-                            </div>
+                            Welcome! Login to continue.                            </div>
                             <div className="mx-auto mb-3 mt-10 text-xl">
-                                <div className="text-center mb-5">Continue to login</div>
-                                <Button label="Login With Google" icon="pi pi-check" className="mt-5 w-full" onClick={login}/>
+                                <div className="text-center mb-5"></div>
+                                {/* <Button label="Login With Google" icon="pi pi-check" className="mt-5 w-full" onClick={login}/> */}
+                           <Button label="Login With Google" icon="pi pi-check" className="mt-5 w-full p-button-primary" onClick={login} />
                             </div>
                             <div className="mx-auto w-80">
 
