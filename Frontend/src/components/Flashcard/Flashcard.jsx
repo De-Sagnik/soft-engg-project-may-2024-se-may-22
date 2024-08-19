@@ -7,15 +7,11 @@ const Flashcard = ( {flashcard} ) => {
   const frontEl = useRef()
   const backEl = useRef()
 
-  // function setMaxHeight(){
-  //   const frontEl
-  // }
-
   return (
     <>
-     <Sidenav />
+     <Sidenav/>
      <div className='container' ref={frontEl}>
-     <div 
+     <div
         className={`card ${flip ? 'flip' : ''}`}
         onClick={() => setFlip(!flip)}
      >
@@ -23,7 +19,7 @@ const Flashcard = ( {flashcard} ) => {
       <Typography variant="h6" gutterBottom sx={{ color: '#333333' }}>
         {flashcard.title}
       </Typography>
-        
+
       </div>
       <div className="back" ref={backEl}>
       <Typography variant="h6" gutterBottom sx={{ color: '#333333' }}>

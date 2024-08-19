@@ -96,19 +96,17 @@ const Code = () => {
 
   const drawerWidth = 240;
 
-  //   const selectedCountryTemplate = (currentAssignment, props) => {
-  //     if (currentAssignment) {
-  //       return (
-  //         <div className="flex align-items-center">
-  //           <div>
-  //             {currentAssignment.assgn_type} Week {currentAssignment.week}
-  //           </div>
-  //         </div>
-  //       );
-  //     }
+    const selectedCountryTemplate = (currentAssignment, props) => {
+        if (currentAssignment) {
+            return (
+                <div className="flex align-items-center">
+                    <div>{currentAssignment.assgn_type} Week {currentAssignment.week}</div>
+                </div>
+            );
+        }
 
-  //     return <span>{props.placeholder}</span>;
-  //   };
+        return <span>{props.placeholder}</span>;
+    };
 
   //   const countryOptionTemplate = (currentAssignment) => {
   //     return (
