@@ -126,11 +126,11 @@ const CourseInstructor = () => {
     <>
       <InstructorSidenav />
       <Container
-        maxWidth="md"
-        style={{ marginTop: "2rem", marginLeft: "260px" }}
-      >
-        <Card>
-          <CardContent>
+  maxWidth="md"
+  style={{ marginTop: "2rem", display: "flex", justifyContent: "center", marginLeft: "30rem"}}
+>
+  <Card style={{ width: "100%", maxWidth: "1500px" }}>
+    <CardContent>
             <Typography variant="h4" align="center" gutterBottom>
               Set Programming Assignment
             </Typography>
