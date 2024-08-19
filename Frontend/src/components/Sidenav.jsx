@@ -19,32 +19,22 @@ import NotesIcon from "@mui/icons-material/Notes";
 import CodeIcon from "@mui/icons-material/Code";
 import QuizIcon from "@mui/icons-material/Quiz";
 import PsychologyIcon from "@mui/icons-material/Psychology";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
 import axios from "axios";
-// import { Inter } from "next/font/google";
-
-// const inter = Inter({ subsets: ["latin"] });
 
 const drawerWidth = 240;
 
-// const paths = {
-//   Notes: "/",
-//   "Coding Assignments": "/course/CS3001/code",
-//   "Graded Assignments": "/assignment",
-//   "Memory Flashcards": "/flashcard",
-// };
-
 const paths = {
-    Notes: (courseName, courseId) => `/notes/${courseName}/${courseId}`,
-    "Coding Assignments": "/course/CS3001/code",
-    "Graded Assignments": "/assignment",
-    "Memory Flashcards": "/flashcard",
+    Notes: (courseId) => `/notes/${courseId}`,
+    Coding_Assignments: (courseId) => `/code/${courseId}`,
+    Graded_Assignments: (courseId) => `/assignments/${courseId}`,
+    Memory_Flashcards: (courseId) => `/flashcards/${courseId}`,
 };
 
 
-const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
-    ({ theme, open }) => {
+const Main = styled("main", {shouldForwardProp: (prop) => prop !== "open"})(
+    ({theme, open}) => {
         const marginLeftValue = `-${drawerWidth}px`;
         return {
             flexGrow: 1,
@@ -93,6 +83,8 @@ const DrawerHeader = styled("div")(({theme}) => ({
 
 const Sidenav = () => {
     const [allCourses, setAllCourses] = useState([]);
+    const params = useParams()
+    const courseId = params.courseId;
     useEffect(() => {
         axios.get("http://localhost:8000/course/getall")
             .then((res) => {
@@ -119,10 +111,6 @@ const Sidenav = () => {
         setOpen(false);
     };
 
-    // const handleNotesClick = () => {
-    //   setIsNotesClicked((prev) => !prev);
-    // };
-
     const handleNotesClick = () => {
         setIsNotesClicked((prev) => !prev);
         if (!isNotesClicked && allCourses.length > 0) {
@@ -130,15 +118,6 @@ const Sidenav = () => {
             navigate(paths.Notes(defaultCourse[1], defaultCourse[0])); // Navigate to default course
         }
     };
-
-
-    // const handleNavigation = (path) => {
-    //   navigate(path);
-    // };
-    // const handleNavigation = (path, courseName = "", courseId = "") => {
-    //   navigate(path(courseName, courseId));
-    // };
-
 
     const handleNavigation = (path, courseName = "", courseId = "") => {
         const resolvedPath = typeof path === 'function' ? path(courseName, courseId) : path;
@@ -216,29 +195,49 @@ const Sidenav = () => {
                 </DrawerHeader>
                 <Divider/>
                 <List>
-                    {material.map((item) => (
-                        <ListItem key={item.courseId || item} disablePadding>
-                            <ListItemButton
-                                onClick={() => {
-                                    if (item === "Notes") {
-                                        handleNotesClick();
-                                    } else if (item.courseId) { // This is a course
-                                        handleNavigation(paths.Notes, item.courseName, item.courseId);
-                                    } else {
-                                        handleNavigation(paths[item]);
-                                    }
-                                }}
-                            >
-                                <ListItemIcon>{icons[item] || <NotesIcon/>}</ListItemIcon>
-                                <ListItemText primary={item.courseName || item}/>
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
+
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            onClick={() => {
+                                handleNavigation(paths.Notes(courseId))
+                            }}>
+                            <ListItemIcon><NotesIcon/></ListItemIcon>
+                            <ListItemText primary="Notes"/>
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            onClick={() => {
+                                handleNavigation(paths.Graded_Assignments(courseId))
+                            }}>
+                            <ListItemIcon><QuizIcon/></ListItemIcon>
+                            <ListItemText primary="Graded Assignments"/>
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            onClick={() => {
+                                handleNavigation(paths.Memory_Flashcards(courseId))
+                            }}>
+                            <ListItemIcon><PsychologyIcon/></ListItemIcon>
+                            <ListItemText primary="Flashcards"/>
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            onClick={() => {
+                                handleNavigation(paths.Coding_Assignments(courseId))
+                            }}>
+                            <ListItemIcon><CodeIcon/></ListItemIcon>
+                            <ListItemText primary="Coding Assignments"/>
+                        </ListItemButton>
+                    </ListItem>
+
                 </List>
 
 
                 <Divider/>
-                <List>
+                <List onClick={() => window.open('/login', '_self')}>
                     {["Logout"].map((text) => (
                         <ListItem key={text} disablePadding>
                             <ListItemButton>
