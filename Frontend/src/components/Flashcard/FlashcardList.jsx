@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import Sidenav from "../Sidenav";
-import {MenuItem, Select} from "@mui/material";
 import Flashcard from "./Flashcard";
 // import FlashcardGenerateButton from '../FlashcardGenerateButton'
 import "../../App.css";
@@ -20,7 +19,6 @@ const FlashcardList = () => {
 
 
     const handleGenerate = () => {
-        console.log("Generating flashcards...", value);
         generate_flashcard(value, courseId).then(() => {
             getFlashCards();
         });
@@ -52,7 +50,6 @@ const FlashcardList = () => {
         )
             .then(res => {
                 setFlashcards(res.data);
-                console.log(res.data, flashcards);
             })
             .catch(err => {
                 console.error("Error fetching flashcards:", err);
@@ -90,7 +87,7 @@ const FlashcardList = () => {
                     Generate
                 </Button></div>
 
-                <GenAI/>
+                <GenAI context="" week={12}/>
             </div>
 
 
