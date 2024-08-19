@@ -19,10 +19,10 @@ const App = () => {
                 <Routes>
                     <Route path="/" exact element={<CourseSelectPage/>}/>
                     <Route path="/course/:courseId" exact element={<Notes/>}/>
-                    <Route path="/notes/:courseId/:courseName" element={<Notes/>}/>
-                    <Route path="/assignment" exact element={<Assignment/>}></Route>
-                    <Route path="/course/:courseId/code" exact element={<Code/>}></Route>
-                    <Route path="/flashcard" exact element={<FlashcardList/>}/>
+                    <Route path="/notes/:courseId" element={<Notes/>}/>
+                    <Route path="/assignments/:courseId" exact element={<Assignment/>}></Route>
+                    <Route path="/code/:courseId" exact element={<Code/>}></Route>
+                    <Route path="/flashcards/:courseId" exact element={<FlashcardList/>}/>
                     <Route
                         path="/instructor/code"
                         exact

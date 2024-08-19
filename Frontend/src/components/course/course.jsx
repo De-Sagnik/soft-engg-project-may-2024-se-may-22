@@ -1,13 +1,8 @@
 import "../../App.css";
 
 import React, {useEffect, useState} from 'react';
-import {Button} from 'primereact/button';
-import {DataView} from 'primereact/dataview';
-import {Rating} from 'primereact/rating';
-import {classNames} from 'primereact/utils';
 import axios from "axios";
 import {Dropdown} from "primereact/dropdown";
-import {Navigate} from "react-router-dom";
 
 
 const CourseSelectPage = (props) => {
@@ -31,12 +26,15 @@ const CourseSelectPage = (props) => {
     }
 
     return (
-        <div className="card flex justify-content-center">
-            <Dropdown value={selectedCourse} onChange={(e) => setID(e.value.course_id)} options={courses}
-                      optionLabel="course_name"
+        <div className="mx-auto mt-16 max-w-3xl">
+            <div className="text-lg text-center">Select a course</div>
+            <div>
+                <Dropdown value={selectedCourse} onChange={(e) => setID(e.value.course_id)} options={courses}
+                          optionLabel="course_name"
 
-                      placeholder="Select a Course" className="w-full md:w-14rem" checkmark={true}
-                      highlightOnSelect={false}/>
+                          placeholder="Select a Course" className="w-full md:w-14rem" checkmark={true}
+                          highlightOnSelect={false}/>
+            </div>
         </div>
     )
 };

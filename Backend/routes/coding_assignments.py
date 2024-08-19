@@ -10,6 +10,7 @@ from bson import ObjectId
 from utils.security import get_current_active_user
 from utils.validation import AlreadyExistsError, NotExistsError
 from models.assignment import ProgrammingAssignment, ProgrammingAssignmentUpdate
+import base64
 
 coding_assignment=APIRouter(prefix='/coding_assignment', tags=["Coding Assignment"])
 
@@ -66,14 +67,15 @@ async def update_coding_assignment(
 def run_test_cases(code: str, test_cases: List[Dict[str, str]], language: str) -> Tuple[List[Dict[str, str]], int]:
     results = []
     passed_count = 0
-
+    
     for testcase in test_cases:
         input_data = testcase['input']
         expected_output = testcase['output']
-
+        
         if language == 'python':
+            import sys
             result = subprocess.run(
-                ["python3", "-c", code],
+                [sys.executable, "-c", code],
                 input=input_data,
                 capture_output=True,
                 text=True
@@ -97,7 +99,7 @@ def run_test_cases(code: str, test_cases: List[Dict[str, str]], language: str) -
                     "status": "Fail"
                 })
                 continue
-
+            
             # Run Java code
             result = subprocess.run(
                 ["java", "-cp", "static", "Main"],
@@ -117,7 +119,7 @@ def run_test_cases(code: str, test_cases: List[Dict[str, str]], language: str) -
             )
         else:
             raise ValueError(f"Unsupported language: {language}")
-
+        
         result_dict = {
             "error": "",
             "output": result.stdout.strip(),
@@ -135,7 +137,7 @@ def run_test_cases(code: str, test_cases: List[Dict[str, str]], language: str) -
             result_dict["status"] = "Fail"
         
         results.append(result_dict)
-
+    
     return results, passed_count
 
 @coding_assignment.post('/run', responses=responses)
@@ -147,21 +149,25 @@ async def run_code(
         ObjectId(submission.assgn_id)
     except:
         raise HTTPException(status_code=422, detail="Invalid assignment id")
-
-    assgn = db.coding_assignment.find_one({"_id": ObjectId(submission.assgn_id)})
-    if not assgn:
-        raise NotExistsError()
     
-    public_testcases = assgn.get('public_testcase', [])
-    private_testcases = assgn.get('private_testcase', [])
-    # Run the test cases and get results and passed counts
-    public_results, passed_public_count = run_test_cases(submission.code, public_testcases, assgn['language'])
-    private_results, passed_private_count = run_test_cases(submission.code, private_testcases, assgn['language'])
+    try:
+        assgn = db.coding_assignment.find_one({"_id": ObjectId(submission.assgn_id)})
+        if not assgn:
+            raise NotExistsError()
+        
+        decoded_code = base64.b64decode(submission.code).decode('utf-8')
+        public_testcases = assgn.get('public_testcase', [])
+        private_testcases = assgn.get('private_testcase', [])
+        # Run the test cases and get results and passed counts
+        public_results, passed_public_count = run_test_cases(decoded_code, public_testcases, assgn['language'])
+        private_results, passed_private_count = run_test_cases(decoded_code, private_testcases, assgn['language'])
 
-    # Return results
-    return {
-        "public_testcases": public_results,
-        "private_testcases": private_results,
-        "passed_public_count": f"{passed_public_count}/{len(public_testcases)}",
-        "passed_private_count": f"{passed_private_count}/{len(private_testcases)}"
-    }
+        # Return results
+        return {
+            "public_testcases": public_results,
+            "private_testcases": private_results,
+            "passed_public_count": f"{passed_public_count}/{len(public_testcases)}",
+            "passed_private_count": f"{passed_private_count}/{len(private_testcases)}"
+        }
+    except Exception as e:
+        return {"error": str(e)}
