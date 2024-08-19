@@ -8,6 +8,7 @@ from routes.notes import notes
 from routes.course_material import course_material
 from routes.coding_assignments import coding_assignment
 from routes.flashcard import fc
+from routes.summarize import summarizer
 from routes.assignment import assgn
 from utils.security import auth
 from utils.response import responses
@@ -45,6 +46,7 @@ app.include_router(auth)
 app.include_router(course)
 app.include_router(course_material)
 app.include_router(fc)
+app.include_router(summarizer)
 app.include_router(assgn)
 app.include_router(coding_assignment)
 app.include_router(notes)

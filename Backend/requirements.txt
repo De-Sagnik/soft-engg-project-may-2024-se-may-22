@@ -56,6 +56,7 @@ kubernetes==30.1.0
 langchain==0.2.10
 langchain-chroma==0.1.2
 langchain-community==0.2.9
+langchain_google_genai
 langchain-core==0.2.22
 langchain-huggingface==0.0.3
 langchain-text-splitters==0.2.2

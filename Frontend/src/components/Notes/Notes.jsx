@@ -99,10 +99,35 @@ const Notes = () => {
     doc.save(`${title}.pdf`);
   };
 
-  const handleSummarize = (noteId) => {
-    // Logic for summarizing
-    alert(`Summarizing note ID: ${noteId}`);
-  };
+//   const handleSummarize = async (noteId) => {
+//     try {
+//         const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}summarize`, { noteId });
+//         // Find the note with the given noteId and update its summary
+//         setNotes((prevNotes) => 
+//             prevNotes.map(note => 
+//                 note._id === noteId ? { ...note, summary: response.data.summary } : note
+//             )
+//         );
+//     } catch (error) {
+//         console.error("Error summarizing note:", error);
+//     }
+// };
+
+const handleSummarize = async (noteId, noteContent) => {
+  try {
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/summarize`, { text: noteContent });
+      // Update the note with the returned summary
+      setNotes((prevNotes) => 
+          prevNotes.map(note => 
+              note._id === noteId ? { ...note, summary: response.data.summary } : note
+          )
+      );
+  } catch (error) {
+      console.error("Error summarizing note:", error);
+  }
+};
+
+
 
   if (loading) {
     return (
@@ -153,7 +178,9 @@ const Notes = () => {
                 >
                   {/* Buttons positioned top right */}
                   <Box sx={{ position: 'absolute', top: 10, right: 50 }}>
-                    <SummarizeButton onClick={() => handleSummarize(note._id)} />
+                    {/* <SummarizeButton onClick={() => handleSummarize(note._id)} /> */}
+                    <SummarizeButton onClick={() => handleSummarize(note._id, note.content)} />
+
                   </Box>
                   <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
                     <DownloadButton onClick={() => handleDownloadPDF(note)} />
@@ -162,9 +189,16 @@ const Notes = () => {
                   <Typography variant="h6" component="div">
                     {note.title}
                   </Typography>
-                  <Typography variant="body2" color="textSecondary" mt={1}>
-                    {note.content}
-                  </Typography>
+                  {/* Display summarized text if available */}
+                  {note.summary ? (
+                      <Typography variant="body2" color="textSecondary" mt={1}>
+                          {note.summary}
+                      </Typography>
+                  ) : (
+                      <Typography variant="body2" color="textSecondary" mt={1}>
+                          {note.content}
+                      </Typography>
+                  )}
                 </Paper>
               ))}
             </Box>
