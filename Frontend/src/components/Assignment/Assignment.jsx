@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import Sidenav from "../Sidenav";
 import axios from "axios";
+import {useParams} from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -68,26 +69,11 @@ const QuestionCard = ({ question }) => {
 };
 
 const Assignment = () => {
+  const params = useParams()
+  const courseId = params.courseId;
   const [questions, setQuestions] = useState([]);
-  const [courseId, setCourseId] = useState("CS01");
   const [week, setWeek] = useState(1);
   const [assgnType, setAssgnType] = useState("AQ");
-  const [allCourses, setAllCourses] = useState({});
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:8000/course/getall")
-      .then((res) => {
-        const courses = {};
-        res.data.forEach((course) => {
-          courses[course.course_id] = course.course_name;
-        });
-        setAllCourses(courses);
-      })
-      .catch((err) => {
-        console.error("Error fetching courses:", err);
-      });
-  }, []);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -134,21 +120,6 @@ const Assignment = () => {
           </FormControl>
 
           <FormControl variant="outlined" style={{ minWidth: 120 }}>
-            <InputLabel>Course</InputLabel>
-            <Select
-              value={courseId}
-              onChange={(e) => setCourseId(e.target.value)}
-              label="Course"
-            >
-              {Object.entries(allCourses).map(([id, name]) => (
-                <MenuItem key={id} value={id}>
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl variant="outlined" style={{ minWidth: 120 }}>
             <InputLabel>Assignment Type</InputLabel>
             <Select
               value={assgnType}
@@ -171,7 +142,7 @@ const Assignment = () => {
               variant="subtitle1"
               style={{ marginTop: "10px", color: "red", fontWeight: "bold" }}
             >
-              Deadline: 
+              Deadline:
               {new Date(questions[0].deadline).toLocaleString()}
             </Typography>
             {questions.map((question) => (

@@ -22,6 +22,7 @@ import PsychologyIcon from "@mui/icons-material/Psychology";
 import {useNavigate, useParams} from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
 import axios from "axios";
+import {CheckIcon} from "primereact/icons/check";
 
 const drawerWidth = 240;
 
@@ -125,33 +126,6 @@ const Sidenav = () => {
     };
 
 
-    const material = isNotesClicked
-        ? [
-            "Notes",
-            ...Object.entries(allCourses).map(([courseId, courseName]) => ({courseId, courseName})),
-            "Coding Assignments",
-            "Graded Assignments",
-            "Memory Flashcards",
-        ]
-        : [
-            "Notes",
-            "Coding Assignments",
-            "Graded Assignments",
-            "Memory Flashcards",
-        ];
-
-
-    const icons = {
-        Notes: <NotesIcon/>,
-        "Coding Assignments": <CodeIcon/>,
-        "Graded Assignments": <QuizIcon/>,
-        "Memory Flashcards": <PsychologyIcon/>,
-    };
-
-
-    // const { user, loginWithRedirect, isAuthenticated, logout } = useAuth0();
-    // console.log("User", user);
-
     return (
         <Box sx={{display: "flex"}}>
             <CssBaseline/>
@@ -160,18 +134,6 @@ const Sidenav = () => {
                     <Typography variant="h6" noWrap component="div">
                         Study Buddy
                     </Typography>
-                    {/* {isAuthenticated ? (
-            <div>
-              <span>Welcome, {user.name}</span>
-              <Button variant="" onClick={() => logout()}>
-                Logout
-              </Button>
-            </div>
-          ) : (
-            <Button variant="" onClick={() => loginWithRedirect()}>
-              Login
-            </Button>
-          )} */}
                 </Toolbar>
             </AppBar>
 
@@ -195,7 +157,12 @@ const Sidenav = () => {
                 </DrawerHeader>
                 <Divider/>
                 <List>
-
+                    <ListItem disablePadding>
+                        <ListItemButton>
+                            <ListItemIcon><CheckIcon/></ListItemIcon>
+                            <ListItemText primary={allCourses[courseId]}/>
+                        </ListItemButton>
+                    </ListItem>
                     <ListItem disablePadding>
                         <ListItemButton
                             onClick={() => {
@@ -237,7 +204,19 @@ const Sidenav = () => {
 
 
                 <Divider/>
-                <List onClick={() => window.open('/login', '_self')}>
+                <List onClick={() => handleNavigation('/')}>
+                    {["Course"].map((text) => (
+                        <ListItem key={text} disablePadding>
+                            <ListItemButton>
+                                <ListItemIcon>
+                                    <LogoutIcon/>
+                                </ListItemIcon>
+                                <ListItemText primary={text}/>
+                            </ListItemButton>
+                        </ListItem>
+                    ))}
+                </List>
+                <List onClick={() => handleNavigation('/login')}>
                     {["Logout"].map((text) => (
                         <ListItem key={text} disablePadding>
                             <ListItemButton>
@@ -252,10 +231,10 @@ const Sidenav = () => {
             </Drawer>
             <Main open={open}>
                 <DrawerHeader/>
-                {/* Add your main content here */}
             </Main>
         </Box>
-    );
+    )
+        ;
 };
 
 export default Sidenav;
