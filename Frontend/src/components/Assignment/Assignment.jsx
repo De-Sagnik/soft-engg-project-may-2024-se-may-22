@@ -18,16 +18,33 @@ import {
 } from "@mui/material";
 import Sidenav from "../Sidenav";
 import axios from "axios";
-import {useParams} from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const drawerWidth = 240;
 
-const QuestionCard = ({ question }) => {
+const QuestionCard = ({ question, handle_answer_change, user_answers }) => {
+  const handleChange = (event) => {
+    if (question.q_type === "MCQ") {
+      handle_answer_change(question.id, event.target.value);
+    } else if (question.q_type === "MSQ") {
+      const currentAnswers = user_answers[question.id] || [];
+      const newAnswers = event.target.checked
+        ? [...currentAnswers, event.target.value]
+        : currentAnswers.filter((answer) => answer !== event.target.value);
+      handle_answer_change(question.id, newAnswers);
+    } else if (question.q_type === "Numerical") {
+      handle_answer_change(question.id, event.target.value);
+    }
+  };
+
   const renderOptions = () => {
     if (question.q_type === "MCQ") {
       return (
         <FormControl component="fieldset">
-          <RadioGroup name={`question-${question.id}`}>
+          <RadioGroup
+            name={`question-${question.id}`}
+            onChange={handleChange}
+          >
             {question.options &&
               question.options.map((option, index) => (
                 <FormControlLabel
@@ -47,14 +64,21 @@ const QuestionCard = ({ question }) => {
             question.options.map((option, index) => (
               <FormControlLabel
                 key={index}
-                control={<Checkbox name={`question-${question.id}-${index}`} />}
+                control={<Checkbox value={option} onChange={handleChange} />}
                 label={option}
               />
             ))}
         </FormControl>
       );
     } else if (question.q_type === "Numerical") {
-      return <TextField type="number" label="Your Answer" variant="outlined" />;
+      return (
+        <TextField
+          type="number"
+          label="Your Answer"
+          variant="outlined"
+          onChange={handleChange}
+        />
+      );
     }
   };
 
@@ -68,12 +92,15 @@ const QuestionCard = ({ question }) => {
   );
 };
 
+
 const Assignment = () => {
-  const params = useParams()
+  const params = useParams();
   const courseId = params.courseId;
   const [questions, setQuestions] = useState([]);
   const [week, setWeek] = useState(1);
   const [assgnType, setAssgnType] = useState("AQ");
+  const [deadline, setDeadline] = useState("");
+  const [user_answers, setUserAnswers] = useState({});
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -86,9 +113,9 @@ const Assignment = () => {
             },
           }
         );
-        console.log(response.data[0]);
         if (Array.isArray(response.data)) {
           setQuestions(response.data);
+          setDeadline(response.data[0]?.deadline);
         }
       } catch (error) {
         console.error(error);
@@ -97,6 +124,64 @@ const Assignment = () => {
 
     fetchQuestions();
   }, [courseId, week, assgnType]);
+
+  const handle_answer_change = (questionId, answer) => {
+    setUserAnswers((prevAnswers) => ({
+      ...prevAnswers,
+      [questionId]: answer,
+    }));
+  };
+
+  const handle_answers_submit = async () => {
+    const today = new Date();
+    const deadline_date = new Date(deadline);
+
+    if (today > deadline_date) {
+      alert("Deadline has passed");
+      return;
+    }
+
+    let user_id = localStorage.getItem("user_id");
+    if (!user_id) {
+      try {
+        const response = await axios.get("http://localhost:8000/user/me", {
+          headers: {
+            Authorization: `Bearer ` + localStorage.getItem("token"),
+          },
+        });
+        user_id = response.data.user_id;
+        localStorage.setItem("user_id", user_id);
+      } catch (err) {
+        console.error(err);
+        alert("Error fetching user details");
+        return;
+      }
+    }
+
+    for (const [questionId, answer] of Object.entries(user_answers)) {
+      try {
+        await axios.post(
+          "http://localhost:8000/user/submit_answers",
+          {
+            assgn_id: questionId,
+            user_id: user_id,
+            answer: answer,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ` + localStorage.getItem("token"),
+            },
+          }
+        );
+      } catch (err) {
+        console.error(err);
+        alert("Error submitting answer for question " + questionId);
+        return;
+      }
+    }
+
+    alert("All answers submitted successfully");
+  };
 
   return (
     <>
@@ -143,12 +228,21 @@ const Assignment = () => {
               style={{ marginTop: "10px", color: "red", fontWeight: "bold" }}
             >
               Deadline:
-              {new Date(questions[0].deadline).toLocaleString()}
+              {deadline}
             </Typography>
             {questions.map((question) => (
-              <QuestionCard key={question.id} question={question} />
+              <QuestionCard
+                key={question.id}
+                question={question}
+                handle_answer_change={handle_answer_change}
+                user_answers={user_answers}
+              />
             ))}
-            <Button variant="contained" color="primary">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handle_answers_submit}
+            >
               Submit
             </Button>
           </>
