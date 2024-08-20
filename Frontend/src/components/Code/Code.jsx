@@ -128,8 +128,8 @@ const Code = () => {
                         <Card>
                             <CardContent>
                                 {currentAssignment ? (
-                                    <>
-                                        <Typography
+                                    // <> */} */}
+                                        {/* <Typography
                                             variant="subtitle1"
                                             style={{
                                                 marginTop: "10px",
@@ -141,8 +141,8 @@ const Code = () => {
                                             {new Date(currentAssignment.deadline).toLocaleString()}
                                         </Typography>
                                         <Typography variant="h5">
-                                            {currentAssignment.question} */}
-                                        {/* </Typography>
+                                            {currentAssignment.question}
+                                        </Typography>
                                         <Typography
                                             variant="subtitle1"
                                             style={{marginTop: "10px"}}
@@ -172,8 +172,8 @@ const Code = () => {
                                 ) : (
                                     <Typography variant="h5">Loading assignment...</Typography>
                                 )}
-                            </CardContent> */}
-                        {/* </Card>
+                            </CardContent>
+                        </Card>
                     </Grid>
 
                     {/* Right side: Code Editor */}
@@ -207,8 +207,8 @@ const Code = () => {
                                         />
                                     </CardContent>
                                 </Card>
-                            </Grid> */}
-                            {/* {testResults &&
+                            </Grid>
+                            {testResults &&
                                 testResults.public_testcases &&
                                 testResults.public_testcases.length > 0 && (
                                     <Grid item xs={12}>
@@ -244,9 +244,9 @@ const Code = () => {
                         </Grid>
                     </Grid>
                 </Grid>
-            </Box> */} */}
+            // </Box> */} */}
         </>
     );
 };
 
-export default Code; 
+export default Code;

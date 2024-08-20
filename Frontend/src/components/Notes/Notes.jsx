@@ -5,7 +5,11 @@ import {useParams} from "react-router-dom";
 import axios from "axios";
 import jsPDF from 'jspdf'; // Import jsPDF
 import DownloadButton from '../DownloadButton'; // Adjust the import path if needed
-import SummarizeButton from './SummarizeButton'; // Adjust the import path if needed
+import SummarizeButton from '../SummarizeButton'; // Adjust the import path if needed
+import { Button } from '@mui/material';
+import GenerateButton from './GenerateButton'; // Adjust the import path
+
+
 
 const drawerWidth = 240; // Define drawerWidth
 
@@ -17,6 +21,8 @@ const Notes = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isSummaryVisible, setIsSummaryVisible] = useState({});
+    const [generatedQuestions, setGeneratedQuestions] = useState({});
+
 
 
     useEffect(() => {
@@ -40,6 +46,38 @@ const Notes = () => {
             setLoading(false);
         }
     }, [courseId]);
+
+
+
+
+  //   const handleGenerate = () => {
+  //     // Implement the logic for generating data here
+  //     console.log("Generate button clicked");
+  //     // Example: Fetch or process data
+  // };
+
+//   const handleGenerate = async (noteId, noteContent) => {
+//     try {
+//         // Send note content to the API
+//         const response = await axios.post('http://localhost:8000/generate_questions', 
+//         { text: noteContent }, 
+//         { 
+//             headers: {
+//                 Authorization: `Bearer ` + localStorage.getItem("token"),
+//             }
+//         });
+
+//         // Update the generated questions for the specific note
+//         setGeneratedQuestions(prevState => ({
+//             ...prevState,
+//             [noteId]: response.data.questions, // Assuming response.data contains the questions
+//         }));
+//     } catch (error) {
+//         console.error("Error generating questions:", error);
+//     }
+// };
+
+
 
     const handleDownloadPDF = (note) => {
         const {title, content} = note;
@@ -110,19 +148,71 @@ const Notes = () => {
 //     }
 // };
 
-// const handleSummarize = async (noteId, noteContent) => {
+// const handleGenerate = async (noteId, noteContent) => {
 //   try {
-//       const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}summarize`, { text: noteContent });
+//       const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}generate_questions`, { text: noteContent });
 //       // Update the note with the returned summary
-//       setNotes((prevNotes) => 
+//       setQuestions((prevNotes) => 
 //           prevNotes.map(note => 
 //               note._id === noteId ? { ...note, summary: response.data.summary } : note
 //           )
 //       );
 //   } catch (error) {
-//       console.error("Error summarizing note:", error);
+//       console.error("Error generating questions:", error);
 //   }
 // };
+
+// const handleGenerate = async (noteId, noteContent) => {
+//     try {
+//         const response = await axios.post(
+//             `${process.env.REACT_APP_BACKEND_URL}generate_questions`, 
+//             { text: noteContent },
+//             {
+//                 headers: {
+//                     Authorization: `Bearer ` + localStorage.getItem("token"),
+//                 }
+//             }
+//         );
+
+//         // Assuming response.data contains the generated questions
+//         setGeneratedQuestions((prevQuestions) => ({
+//             ...prevQuestions,
+//             [noteId]: response.data.questions, // Update with the questions for the specific note
+//         }));
+//     } catch (error) {
+//         console.error("Error generating questions:", error);
+//     }
+// };
+
+const handleGenerate = async (noteId, noteContent) => {
+  try {
+      const response = await axios.post(
+          `${process.env.REACT_APP_BACKEND_URL}generate_questions`, 
+          { text: noteContent },
+          {
+              headers: {
+                  Authorization: `Bearer ` + localStorage.getItem("token"),
+              }
+          }
+      );
+
+      // Log the response data to see its structure
+      console.log("API Response:", response);
+
+      // Assuming response.data contains the generated questions
+      console.log("Generated Questions:", response.data.questions);
+
+      // Update the note with the returned questions
+      setGeneratedQuestions((prevQuestions) => ({
+          ...prevQuestions,
+          [noteId]: response.data.questions, // Update with the questions for the specific note
+      }));
+  } catch (error) {
+      console.error("Error generating questions:", error);
+  }
+};
+
+
 
 
 const handleSummarize = async (noteId, noteContent) => {
@@ -142,10 +232,6 @@ const handleSummarize = async (noteId, noteContent) => {
       console.error("Error summarizing note:", error);
   }
 };
-
-
-
-
 
     if (loading) {
         return (
@@ -195,12 +281,27 @@ const handleSummarize = async (noteId, noteContent) => {
                 }}
             >
                 {/* Buttons positioned top right */}
-                <Box sx={{ position: 'absolute', top: 10, right: 50 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+    
+</Box>
+
+<Box sx={{ position: 'absolute', top: 10, right: 165 }}>
                     <SummarizeButton 
                         onClick={() => handleSummarize(note._id, note.content)} 
                         buttonText={isSummaryVisible[note._id] ? 'Back' : 'Summarize'} 
                     />
                 </Box>
+
+<Box sx={{ position: 'absolute', top: 10, right: 50 }}>
+{/* <Button variant="contained" onClick={handleGenerate}>
+        Generate
+    </Button> */}
+    <Button variant="contained" onClick={() => handleGenerate(note._id, note.content)}>
+    Generate
+</Button>
+
+    </Box>
+                
                 <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
                     <DownloadButton onClick={() => handleDownloadPDF(note)} />
                 </Box>
@@ -219,6 +320,65 @@ const handleSummarize = async (noteId, noteContent) => {
                         {note.content}
                     </Typography>
                 )}
+
+
+{/* {generatedQuestions[note._id] && (
+    <Box mt={2}>
+        <Typography variant="h6">Generated Questions:</Typography>
+        <ul>
+            {generatedQuestions[note._id].map((question, index) => (
+                <li key={index}>{question}</li>
+            ))}
+        </ul>
+    </Box>
+)} */}
+
+{generatedQuestions[note._id] && generatedQuestions[note._id].length > 0 && (
+    <Box mt={2} sx={{ border: '1px solid #ddd', borderRadius: '8px', p: 2, bgcolor: '#f9f9f9' }}>
+        <Typography variant="h6" gutterBottom>
+            Generated Questions:
+        </Typography>
+        {generatedQuestions[note._id].map((item, index) => (
+            <Box key={index} sx={{ mb: 3, p: 2, borderBottom: index < generatedQuestions[note._id].length - 1 ? '1px solid #ddd' : 'none' }}>
+                <Typography variant="body1" fontWeight="bold">
+                    Question:
+                </Typography>
+                <Typography variant="body2" mb={2}>
+                    {item.question}
+                </Typography>
+                <Typography variant="body1" fontWeight="bold">
+                    Options:
+                </Typography>
+                <Box component="ul" sx={{ pl: 2, mb: 2 }}>
+                    <Typography component="li" variant="body2" sx={{ display: 'list-item' }}>
+                        {item.option1}
+                    </Typography>
+                    <Typography component="li" variant="body2" sx={{ display: 'list-item' }}>
+                        {item.option2}
+                    </Typography>
+                    <Typography component="li" variant="body2" sx={{ display: 'list-item' }}>
+                        {item.option3}
+                    </Typography>
+                    <Typography component="li" variant="body2" sx={{ display: 'list-item' }}>
+                        {item.option4}
+                    </Typography>
+                </Box>
+                <Typography variant="body1" fontWeight="bold">
+                    Correct Option:
+                </Typography>
+                <Typography variant="body2">
+                    {item.correct_option}
+                </Typography>
+            </Box>
+        ))}
+    </Box>
+)}
+
+
+
+
+
+
             </Paper>
             
               ))}
@@ -226,6 +386,7 @@ const handleSummarize = async (noteId, noteContent) => {
           )}
         </Container>
       </Box>
+      
     </>
   );
 };
