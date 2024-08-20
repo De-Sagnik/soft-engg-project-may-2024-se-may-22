@@ -15,26 +15,17 @@ import {
   MenuItem,
   Select,
   InputLabel,
+  Dialog,         // Add this import
+  DialogTitle,    // Add this import
+  DialogContent,  // Add this import
+  DialogActions  
 } from "@mui/material";
 import Sidenav from "../Sidenav";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
+
 const drawerWidth = 240;
-
-const formatDateTime = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  }) + ' ' + date.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-};
-
 
 const QuestionCard = ({ question, handle_answer_change, user_answers }) => {
   const handleChange = (event) => {
@@ -116,6 +107,21 @@ const Assignment = () => {
   const [deadline, setDeadline] = useState("");
   const [user_answers, setUserAnswers] = useState({});
 
+  const [open, setOpen] = useState(false);  // Define setOpen here
+  const [generatedQuestions, setGeneratedQuestions] = useState([]);
+
+  const [userSelections, setUserSelections] = useState({});
+const [highlightedAnswers, setHighlightedAnswers] = useState({});
+const [hasSubmitted, setHasSubmitted] = useState(false);
+
+
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  
+  
+
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -145,6 +151,67 @@ const Assignment = () => {
       [questionId]: answer,
     }));
   };
+
+  const handleGenerate = async () => {
+    try {
+      const noteContent = questions.map((q) => q.question).join(" "); // Combine all questions into one text
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}generate_questions`,
+        { text: noteContent },
+        {
+          headers: {
+            Authorization: `Bearer ` + localStorage.getItem("token"),
+          },
+        }
+      );
+
+      const handleSubmit = () => {
+        const newHighlightedAnswers = {};
+        
+        generatedQuestions.forEach((questionObj) => {
+          const userAnswer = userSelections[questionObj.question];
+          if (userAnswer === questionObj.correct_option) {
+            newHighlightedAnswers[questionObj.question] = 'correct';
+          } else {
+            newHighlightedAnswers[questionObj.question] = 'incorrect';
+          }
+        });
+      
+        setHighlightedAnswers(newHighlightedAnswers);
+        setHasSubmitted(true); // Set flag to true when form is submitted
+      };
+  
+      setGeneratedQuestions(response.data.questions);
+      setOpen(true); // Open the modal
+    } catch (error) {
+      console.error("Error generating questions:", error);
+    }
+  };
+
+  const handleOptionChange = (questionId, option) => {
+    setUserSelections((prevSelections) => ({
+      ...prevSelections,
+      [questionId]: option
+    }));
+  };
+  
+
+  const handleSubmit = () => {
+    const newHighlightedAnswers = {};
+    
+    generatedQuestions.forEach((questionObj) => {
+      const userAnswer = userSelections[questionObj.question];
+      if (userAnswer === questionObj.correct_option) {
+        newHighlightedAnswers[questionObj.question] = 'correct';
+      } else {
+        newHighlightedAnswers[questionObj.question] = 'incorrect';
+      }
+    });
+  
+    setHighlightedAnswers(newHighlightedAnswers);
+  };
+  
+  
 
   const handle_answers_submit = async () => {
     const today = new Date();
@@ -237,23 +304,13 @@ const Assignment = () => {
         {/* Questions or No Questions Message */}
         {questions && Array.isArray(questions) && questions.length > 0 ? (
           <>
-            {/* <Typography
+            <Typography
               variant="subtitle1"
               style={{ marginTop: "10px", color: "red", fontWeight: "bold" }}
             >
               Deadline:
               {deadline}
-            </Typography> */}
-
-<Typography
-  variant="subtitle1"
-  style={{ marginTop: "10px", color: "red", fontWeight: "bold" }}
->
-  Deadline: {formatDateTime(deadline)}
-</Typography>
-
-
-
+            </Typography>
             {questions.map((question) => (
               <QuestionCard
                 key={question.id}
@@ -262,10 +319,21 @@ const Assignment = () => {
                 user_answers={user_answers}
               />
             ))}
+
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleGenerate}
+            >
+              Generate
+            </Button>
+
+
             <Button
               variant="contained"
               color="primary"
               onClick={handle_answers_submit}
+              style={{ right: "-5px" }}
             >
               Submit
             </Button>
@@ -276,6 +344,89 @@ const Assignment = () => {
           </Typography>
         )}
       </Box>
+
+      <Dialog open={open} onClose={handleClose}>
+  <DialogTitle>Generated Questions</DialogTitle>
+  <DialogContent>
+  {generatedQuestions.map((questionObj, index) => (
+  <div key={index} style={{ marginBottom: "20px" }}>
+    <Typography variant="body1" gutterBottom>
+      <strong>Question {index + 1}:</strong> {questionObj.question}
+    </Typography>
+    <Typography variant="body2">
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={userSelections[questionObj.question] === questionObj.option1}
+            onChange={() => handleOptionChange(questionObj.question, questionObj.option1)}
+            color="primary"
+            style={{ borderRadius: '50%' }}
+          />
+        }
+        label={<strong>Option 1:</strong> + questionObj.option1}
+      />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={userSelections[questionObj.question] === questionObj.option2}
+            onChange={() => handleOptionChange(questionObj.question, questionObj.option2)}
+            color="primary"
+            style={{ borderRadius: '50%' }}
+          />
+        }
+        label={<strong>Option 2:</strong> + questionObj.option2}
+      />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={userSelections[questionObj.question] === questionObj.option3}
+            onChange={() => handleOptionChange(questionObj.question, questionObj.option3)}
+            color="primary"
+            style={{ borderRadius: '50%' }}
+          />
+        }
+        label={<strong>Option 3:</strong> + questionObj.option3}
+      />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={userSelections[questionObj.question] === questionObj.option4}
+            onChange={() => handleOptionChange(questionObj.question, questionObj.option4)}
+            color="primary"
+            style={{ borderRadius: '50%' }}
+          />
+        }
+        label={<strong>Option 4:</strong> + questionObj.option4}
+      />
+    </Typography>
+    {highlightedAnswers[questionObj.question] && (
+      <Typography
+        variant="body2"
+        style={{
+          marginTop: "10px",
+          color: highlightedAnswers[questionObj.question] === 'correct' ? 'green' : 'red'
+        }}
+      >
+        <strong>Correct Option:</strong> {questionObj.correct_option}
+      </Typography>
+    )}
+  </div>
+))}
+
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleSubmit} color="primary">
+      Submit
+    </Button>
+    <Button onClick={handleClose} color="primary">
+      Close
+    </Button>
+  </DialogActions>
+</Dialog>
+
+
+
+
     </>
   );
 };
