@@ -111,7 +111,7 @@ const Code = () => {
     //   };
     return (
         <>
-            <Sidenav/>
+            {/* <Sidenav/>
             <Box
                 component="main"
                 sx={{
@@ -124,7 +124,7 @@ const Code = () => {
             >
                 <Grid container spacing={2}>
                     {/* Left side: Question */}
-                    <Grid item xs={12} md={6}>
+                    {/* <Grid item xs={12} md={6}>
                         <Card>
                             <CardContent>
                                 {currentAssignment ? (
@@ -141,8 +141,8 @@ const Code = () => {
                                             {new Date(currentAssignment.deadline).toLocaleString()}
                                         </Typography>
                                         <Typography variant="h5">
-                                            {currentAssignment.question}
-                                        </Typography>
+                                            {currentAssignment.question} */}
+                                        {/* </Typography>
                                         <Typography
                                             variant="subtitle1"
                                             style={{marginTop: "10px"}}
@@ -172,12 +172,12 @@ const Code = () => {
                                 ) : (
                                     <Typography variant="h5">Loading assignment...</Typography>
                                 )}
-                            </CardContent>
-                        </Card>
+                            </CardContent> */}
+                        {/* </Card>
                     </Grid>
 
                     {/* Right side: Code Editor */}
-                    <Grid item xs={12} md={6}>
+                    {/* <Grid item xs={12} md={6}>
                         <Grid container spacing={2}>
                             <div className="flex align-middle gap-2 justify-center">
                                 <Button variant="contained" onClick={runCode}>
@@ -207,8 +207,8 @@ const Code = () => {
                                         />
                                     </CardContent>
                                 </Card>
-                            </Grid>
-                            {testResults &&
+                            </Grid> */}
+                            {/* {testResults &&
                                 testResults.public_testcases &&
                                 testResults.public_testcases.length > 0 && (
                                     <Grid item xs={12}>
@@ -244,9 +244,9 @@ const Code = () => {
                         </Grid>
                     </Grid>
                 </Grid>
-            </Box>
+            </Box> */} */}
         </>
     );
 };
 
-export default Code;
+export default Code; 

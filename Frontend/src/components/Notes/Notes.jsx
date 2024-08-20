@@ -5,7 +5,7 @@ import {useParams} from "react-router-dom";
 import axios from "axios";
 import jsPDF from 'jspdf'; // Import jsPDF
 import DownloadButton from '../DownloadButton'; // Adjust the import path if needed
-import SummarizeButton from '../SummarizeButton'; // Adjust the import path if needed
+import SummarizeButton from './SummarizeButton'; // Adjust the import path if needed
 
 const drawerWidth = 240; // Define drawerWidth
 
@@ -16,6 +16,8 @@ const Notes = () => {
     const [notes, setNotes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isSummaryVisible, setIsSummaryVisible] = useState({});
+
 
     useEffect(() => {
         if (courseId) {
@@ -108,19 +110,39 @@ const Notes = () => {
 //     }
 // };
 
+// const handleSummarize = async (noteId, noteContent) => {
+//   try {
+//       const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}summarize`, { text: noteContent });
+//       // Update the note with the returned summary
+//       setNotes((prevNotes) => 
+//           prevNotes.map(note => 
+//               note._id === noteId ? { ...note, summary: response.data.summary } : note
+//           )
+//       );
+//   } catch (error) {
+//       console.error("Error summarizing note:", error);
+//   }
+// };
+
+
 const handleSummarize = async (noteId, noteContent) => {
   try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}summarize`, { text: noteContent });
-      // Update the note with the returned summary
-      setNotes((prevNotes) => 
-          prevNotes.map(note => 
-              note._id === noteId ? { ...note, summary: response.data.summary } : note
-          )
-      );
+      if (!isSummaryVisible[noteId]) {
+          const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}summarize`, { text: noteContent });
+          setNotes((prevNotes) => 
+              prevNotes.map(note => 
+                  note._id === noteId ? { ...note, summary: response.data.summary } : note
+              )
+          );
+          setIsSummaryVisible((prev) => ({ ...prev, [noteId]: true }));
+      } else {
+          setIsSummaryVisible((prev) => ({ ...prev, [noteId]: false }));
+      }
   } catch (error) {
       console.error("Error summarizing note:", error);
   }
 };
+
 
 
 
@@ -161,41 +183,44 @@ const handleSummarize = async (noteId, noteContent) => {
             <Box>
               {notes.map((note) => (
                 <Paper
-                  key={note._id}
-                  elevation={3}
-                  sx={{
+                key={note._id}
+                elevation={3}
+                sx={{
                     p: 3,
                     mb: 2,
                     display: 'flex',
                     flexDirection: 'column',
                     position: 'relative',
                     borderRadius: '8px', // Optional: Add rounded corners
-                  }}
-                >
-                  {/* Buttons positioned top right */}
-                  <Box sx={{ position: 'absolute', top: 10, right: 50 }}>
-                    {/* <SummarizeButton onClick={() => handleSummarize(note._id)} /> */}
-                    <SummarizeButton onClick={() => handleSummarize(note._id, note.content)} />
-
-                  </Box>
-                  <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
+                }}
+            >
+                {/* Buttons positioned top right */}
+                <Box sx={{ position: 'absolute', top: 10, right: 50 }}>
+                    <SummarizeButton 
+                        onClick={() => handleSummarize(note._id, note.content)} 
+                        buttonText={isSummaryVisible[note._id] ? 'Back' : 'Summarize'} 
+                    />
+                </Box>
+                <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
                     <DownloadButton onClick={() => handleDownloadPDF(note)} />
-                  </Box>
-                  
-                  <Typography variant="h6" component="div">
+                </Box>
+            
+                <Typography variant="h6" component="div">
                     {note.title}
-                  </Typography>
-                  {/* Display summarized text if available */}
-                  {note.summary ? (
-                      <Typography variant="body2" color="textSecondary" mt={1}>
-                          {note.summary}
-                      </Typography>
-                  ) : (
-                      <Typography variant="body2" color="textSecondary" mt={1}>
-                          {note.content}
-                      </Typography>
-                  )}
-                </Paper>
+                </Typography>
+            
+                {/* Conditionally render summary or content */}
+                {isSummaryVisible[note._id] && note.summary ? (
+                    <Typography variant="body2" color="textSecondary" mt={1}>
+                        {note.summary}
+                    </Typography>
+                ) : (
+                    <Typography variant="body2" color="textSecondary" mt={1}>
+                        {note.content}
+                    </Typography>
+                )}
+            </Paper>
+            
               ))}
             </Box>
           )}
