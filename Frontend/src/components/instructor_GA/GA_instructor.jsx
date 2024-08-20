@@ -24,6 +24,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 
+
 const Instructor = () => {
   const [questions, setQuestions] = useState([]);
   const [questionText, setQuestionText] = useState("");
@@ -182,7 +183,7 @@ const handleAddQuestion = () => {
       <Box marginLeft="240px" my={4}>
         <Typography variant="h4" gutterBottom>
           Set Questions
-        </Typography>
+        </Typography> 
 
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DateTimePicker

@@ -22,6 +22,20 @@ import { useParams } from "react-router-dom";
 
 const drawerWidth = 240;
 
+const formatDateTime = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }) + ' ' + date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+
 const QuestionCard = ({ question, handle_answer_change, user_answers }) => {
   const handleChange = (event) => {
     if (question.q_type === "MCQ") {
@@ -223,13 +237,23 @@ const Assignment = () => {
         {/* Questions or No Questions Message */}
         {questions && Array.isArray(questions) && questions.length > 0 ? (
           <>
-            <Typography
+            {/* <Typography
               variant="subtitle1"
               style={{ marginTop: "10px", color: "red", fontWeight: "bold" }}
             >
               Deadline:
               {deadline}
-            </Typography>
+            </Typography> */}
+
+<Typography
+  variant="subtitle1"
+  style={{ marginTop: "10px", color: "red", fontWeight: "bold" }}
+>
+  Deadline: {formatDateTime(deadline)}
+</Typography>
+
+
+
             {questions.map((question) => (
               <QuestionCard
                 key={question.id}
