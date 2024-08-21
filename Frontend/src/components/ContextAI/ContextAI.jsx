@@ -26,6 +26,7 @@ const GenAI = () => {
             ws.send(JSON.stringify(dt))
         }
         ws.onclose = () => {
+            setQuery("")
             setLoading(false)
         }
     }
@@ -36,7 +37,7 @@ const GenAI = () => {
             <div className="flex flex-col justify-between h-[80vh] ml-[260px] mr-20">
                 <div>
                     <div className="flex justify-between">
-                        <p className="mb-2 text-xl">Write a query to get AI reply for the course</p>
+                        <p className="mb-2 text-xl">Write a query to get AI reply for the course (I can any question from the course only)</p>
                         <div>
                             {loading ?
                                 <i className="pi pi-spin pi-spinner mt-1" style={{fontSize: 'rem'}}></i> : ''}
@@ -44,8 +45,8 @@ const GenAI = () => {
                     </div>
 
                     <div className="w-full flex justify-end">
-                        <div className="max-w-5xl bg-blue-200  p-2 rounded-2xl ">
-                        <p className="text-justify  text-xl">
+                        <div className="max-w-5xl bg-blue-100 h-[67vh] p-4 rounded-2xl overflow-scroll">
+                        <p className="text-justify">
                             <Markdown>{text}</Markdown>
                         </p>
                         </div>
