@@ -23,7 +23,7 @@ def evaluate_assignment(assignment, course_registered_users):
             mark = 0
             if submission and submission['answer'] == assignment['answers']:
                 mark = 1
-            db.assignment_mark.insert_one({"user_id": user_id, "assgn_id": ObjectId(assignment['_id']), "mark": mark})
+            db.assignment_mark.update_one({"user_id": user_id, "assgn_id": ObjectId(assignment['_id'])}, {"$set": {"user_id": user_id, "assgn_id": ObjectId(assignment['_id']), "mark": mark}}, upsert=True)
         db.assignment.update_one({"_id": ObjectId(assignment['_id'])}, {"$set": {"evaluated": True}})
 
 def evaluate_coding_assignment(coding_assignment, course_registered_users):
@@ -35,7 +35,7 @@ def evaluate_coding_assignment(coding_assignment, course_registered_users):
             mark = 0
             if coding_submission and coding_submission['answer'] == private_test_cases:
                 mark = 1
-            db.assignment_mark.insert_one({"user_id": user_id, "assgn_id": ObjectId(coding_assignment['_id']), "mark": mark})
+            db.assignment_mark.update_one({"user_id": user_id, "assgn_id": ObjectId(coding_assignment['_id'])}, {"$set": {"user_id": user_id, "assgn_id": ObjectId(coding_assignment['_id']), "mark": mark}}, upsert=True)
         db.coding_assignment.update_one({"_id": ObjectId(coding_assignment['_id'])}, {"$set": {"evaluated": True}})
 
 def update_course_marks():
@@ -50,7 +50,11 @@ def process_assignments(course_id, week, assignment_type):
     users_submissions = aggregate_submissions(course_id, week, assignment_type)
     for submission in users_submissions:
         marks = calculate_marks(submission, course_id, week, assignment_type)
-        db.marks.insert_one(marks)
+        db.marks.update_one({
+            'user_id': submission['_id'],
+            'course_id': course_id,
+            'week': week,
+            'assgn_type': assignment_type}, {"$set": marks}, upsert=True)
 
 def aggregate_submissions(course_id, week, assignment_type):
     return objectsEntity(db.assignment_mark.aggregate([

@@ -27,5 +27,5 @@
 **/yarn-error.log*
 
 **/.idea
-
+**/dummy.py
 **/venv/*
