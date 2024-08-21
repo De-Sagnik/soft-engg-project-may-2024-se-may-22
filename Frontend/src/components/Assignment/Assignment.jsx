@@ -18,7 +18,7 @@ import {
   Dialog,         // Add this import
   DialogTitle,    // Add this import
   DialogContent,  // Add this import
-  DialogActions  
+  DialogActions
 } from "@mui/material";
 import Sidenav from "../Sidenav";
 import axios from "axios";
@@ -60,6 +60,7 @@ const QuestionCard = ({ question, handle_answer_change, user_answers }) => {
   const renderOptions = () => {
     if (question.q_type === "MCQ") {
       return (
+
         <FormControl component="fieldset">
           <RadioGroup
             name={`question-${question.id}`}
@@ -104,8 +105,10 @@ const QuestionCard = ({ question, handle_answer_change, user_answers }) => {
 
   return (
     <Card variant="outlined" style={{ marginBottom: "16px" }}>
-      <CardContent>
-        <Typography variant="h6">{question.question}</Typography>
+      <CardContent >
+        <div className="whitespace-pre-wrap">
+          {question.question}
+        </div>
         {renderOptions()}
       </CardContent>
     </Card>
@@ -134,8 +137,8 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
   const handleClose = () => {
     setOpen(false);
   };
-  
-  
+
+
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -182,7 +185,7 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
 
       const handleSubmit = () => {
         const newHighlightedAnswers = {};
-        
+
         generatedQuestions.forEach((questionObj) => {
           const userAnswer = userSelections[questionObj.question];
           if (userAnswer === questionObj.correct_option) {
@@ -191,11 +194,11 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
             newHighlightedAnswers[questionObj.question] = 'incorrect';
           }
         });
-      
+
         setHighlightedAnswers(newHighlightedAnswers);
         setHasSubmitted(true); // Set flag to true when form is submitted
       };
-  
+
       setGeneratedQuestions(response.data.questions);
       setOpen(true); // Open the modal
     } catch (error) {
@@ -209,11 +212,11 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
       [questionId]: option
     }));
   };
-  
+
 
   const handleSubmit = () => {
     const newHighlightedAnswers = {};
-    
+
     generatedQuestions.forEach((questionObj) => {
       const userAnswer = userSelections[questionObj.question];
       if (userAnswer === questionObj.correct_option) {
@@ -222,11 +225,11 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
         newHighlightedAnswers[questionObj.question] = 'incorrect';
       }
     });
-  
+
     setHighlightedAnswers(newHighlightedAnswers);
   };
-  
-  
+
+
 
   const handle_answers_submit = async () => {
     const today = new Date();
@@ -391,7 +394,7 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
   }
   label={<span><strong></strong> {questionObj.option1}</span>}
 />
-      
+
 <FormControlLabel
   control={
     <Checkbox
