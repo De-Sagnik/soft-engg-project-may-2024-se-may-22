@@ -27,6 +27,21 @@ import { useParams } from "react-router-dom";
 
 const drawerWidth = 240;
 
+const formatDateTime = (dateString) => {
+  const date = new Date(dateString);
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZoneName: 'short',
+  };
+  return date.toLocaleDateString('en-US', options);
+};
+
+
 const QuestionCard = ({ question, handle_answer_change, user_answers }) => {
   const handleChange = (event) => {
     if (question.q_type === "MCQ") {
@@ -308,8 +323,7 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
               variant="subtitle1"
               style={{ marginTop: "10px", color: "red", fontWeight: "bold" }}
             >
-              Deadline:
-              {deadline}
+              Deadline: {deadline}
             </Typography>
             {questions.map((question) => (
               <QuestionCard
