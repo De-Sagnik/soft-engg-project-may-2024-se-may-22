@@ -91,14 +91,17 @@ async def register_courses(
 
 from utils.grading import *
 
-@user.post('/submit_answer', responses=responses)
+@user.post('/submit_answers', responses=responses)
 async def submit_answers(
     current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])],
     submissions: List[AssignmentSubmissionForm]
 ):
     assignment_id = dict(submissions[0])['assgn_id']
+    print('At this point_2')
     assignment = db.assignment.find_one({"_id": ObjectId(assignment_id)})
+    print('At this point_3')
     coding_assignment = db.coding_assignment.find_one({"_id": ObjectId(assignment_id)})
+    print('At this point_4')
 
     print(assignment, coding_assignment)
 
@@ -113,6 +116,7 @@ async def submit_answers(
         
         for submission in  submissions
     ]
+    print('At this point_1')
 
     db.last_submission.update_one({ 
         "user_id": current_user.user_id,
@@ -125,6 +129,8 @@ async def submit_answers(
                                     "assgn_type": assgn["assgn_type"],
                                     "last_submission": datetime.now() }
     }, upsert=True)
+
+    print('At this point')
 
 
     submit = db.submission.insert_many(submission_dicts)
