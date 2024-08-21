@@ -20,7 +20,7 @@ def format_query(query, week, course_id):
     model_query = '''
 <|system|>
 Answer the question based on your knowledge. Please follow the following rules:
-1. If you don't relate something in context. Return Ask question related to course
+1. If you are not able to relate something in context with respect to query. Return Ask question related to course
 2. If you relate something in the context, write the answer in a concise way. Format: Answer
 <|question|>
     

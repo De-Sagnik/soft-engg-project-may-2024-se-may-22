@@ -198,7 +198,7 @@ const Sidenav = () => {
                                 handleNavigation(paths.Context_Search(courseId))
                             }}>
                             <ListItemIcon><i className="pi pi-microchip-ai text-xl"></i></ListItemIcon>
-                            <ListItemText primary="Course Search"/>
+                            <ListItemText primary="AI Ask"/>
                         </ListItemButton>
                     </ListItem>
                 </List>
