@@ -9,6 +9,7 @@ import {Button} from "primereact/button";
 import {generate_flashcard} from "./generate";
 import {useParams} from "react-router-dom";
 import {Toast} from "primereact/toast";
+import FlashCardCreate from "./FlashCardCreate";
 
 const FlashcardList = () => {
     const params = useParams()
@@ -87,9 +88,10 @@ const FlashcardList = () => {
                         <InputText value={value} onChange={(e) => setValue(e.target.value)}/>
                     </IconField>
                 </div>
-                <div><Button className="my-auto ml-2" color="primary" onClick={handleGenerate}>
+                <div><Button className="my-auto ml-2" severity="help" onClick={handleGenerate}>
                     Generate
                 </Button></div>
+                <div><FlashCardCreate getFlashCards={getFlashCards} toast={show}></FlashCardCreate></div>
             </div>
 
 

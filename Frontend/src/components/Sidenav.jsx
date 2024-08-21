@@ -30,6 +30,7 @@ const paths = {
     Coding_Assignments: (courseId) => `/code/${courseId}`,
     Graded_Assignments: (courseId) => `/assignments/${courseId}`,
     Memory_Flashcards: (courseId) => `/flashcards/${courseId}`,
+    Context_Search: (courseId) => `/context-search/${courseId}`,
 };
 
 const Main = styled("main", {shouldForwardProp: (prop) => prop !== "open"})(
@@ -97,7 +98,6 @@ const Sidenav = () => {
                 console.error("Error fetching courses:", err);
             });
     }, []);
-    const theme = useTheme();
     const [open, setOpen] = React.useState(true);
     const [isNotesClicked, setIsNotesClicked] = React.useState(false);
     const navigate = useNavigate();
@@ -192,8 +192,16 @@ const Sidenav = () => {
                         </ListItemButton>
                     </ListItem>
 
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            onClick={() => {
+                                handleNavigation(paths.Context_Search(courseId))
+                            }}>
+                            <ListItemIcon><i className="pi pi-microchip-ai text-xl"></i></ListItemIcon>
+                            <ListItemText primary="Course Search"/>
+                        </ListItemButton>
+                    </ListItem>
                 </List>
-
 
                 <Divider/>
                 <List onClick={() => handleNavigation('/')}>

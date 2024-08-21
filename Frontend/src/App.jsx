@@ -9,8 +9,9 @@ import Instructor from "./components/instructor_GA/GA_instructor";
 import FlashcardList from "./components/Flashcard/FlashcardList";
 import InstructorNotes from "./components/instructor_Notes/InstructorNotes.jsx";
 import Login from "./components/Login/Login";
-import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
+import { PrimeReactProvider } from 'primereact/api';
 import CourseSelectPage from "./components/course/course";
+import ContextAI from "./components/ContextAI/ContextAI";
 
 const App = () => {
     return (
@@ -20,6 +21,7 @@ const App = () => {
                     <Route path="/" exact element={<CourseSelectPage/>}/>
                     <Route path="/course/:courseId" exact element={<Notes/>}/>
                     <Route path="/notes/:courseId" element={<Notes/>}/>
+                    <Route path="/context-search/:courseId" element={<ContextAI/>}/>
                     <Route path="/assignments/:courseId" exact element={<Assignment/>}></Route>
                     <Route path="/code/:courseId" exact element={<Code/>}></Route>
                     <Route path="/flashcards/:courseId" exact element={<FlashcardList/>}/>

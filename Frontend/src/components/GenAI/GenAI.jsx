@@ -33,7 +33,7 @@ const GenAI = ({week, context}) => {
 
     return (
         <>
-            <Button variant="contained" onClick={() => setVisibleRight(true)}>
+            <Button onClick={() => setVisibleRight(true)}>
                 Ask AI
             </Button>
             <Sidebar visible={visibleRight} position="right" onHide={() => setVisibleRight(false)} className="w-96">

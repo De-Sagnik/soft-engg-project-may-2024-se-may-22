@@ -20,8 +20,8 @@ def format_query(query, week, course_id):
     model_query = '''
 <|system|>
 Answer the question based on your knowledge. Please follow the following rules:
-1. If you don't find something in context, don't try to make up an answer. Return None
-2. If you find the answer, write the answer in a concise way with two sentences maximum. Format: Answer
+1. If you don't relate something in context. Return Ask question related to course
+2. If you relate something in the context, write the answer in a concise way. Format: Answer
 <|question|>
     
     '''
@@ -40,7 +40,7 @@ def format_query_flashcard(query, week, course_id):
     model_query = '''
 <|system|>
 Generate Flashcard from the following use the context to help. Please follow the following rules:
-1. If you don't find something in context, don't try to make up an answer. Return None.
+1. If you don't find something in context, don't try to make up an answer. Return Ask question related to course.
 2. If you find the answer, write the answer in a concise way with two sentences maximum.
 3. Only give the answer for Back of the flashcard, no other entities. Format: Answer
 <|query|>
