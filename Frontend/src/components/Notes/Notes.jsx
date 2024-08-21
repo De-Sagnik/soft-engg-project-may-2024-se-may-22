@@ -253,7 +253,7 @@ const Notes = () => {
                                     <Box sx={{position: 'absolute', top: 10, right: 165}}>
                                         <SummarizeButton
                                             onClick={() => handleSummarize(note._id, note.content)}
-                                            buttonText={isSummaryVisible[note._id] ? 'Back' : 'Summarize'}
+                                            buttonText={isSummaryVisible[note._id] ? 'Back' : 'Summarize Notes'}
                                         />
                                     </Box>
 
@@ -263,7 +263,7 @@ const Notes = () => {
     </Button> */}
                                         <Button variant="contained"
                                                 onClick={() => handleGenerate(note._id, note.content)}>
-                                            Generate
+                                            Generate Questions
                                         </Button>
 
                                     </Box>
