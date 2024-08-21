@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Sidenav from "../Sidenav";
 import Flashcard from "./Flashcard";
 import "../../App.css";
@@ -8,12 +8,14 @@ import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {generate_flashcard} from "./generate";
 import {useParams} from "react-router-dom";
+import {Toast} from "primereact/toast";
 
 const FlashcardList = () => {
     const params = useParams()
     const courseId = params.courseId;
     const [flashcards, setFlashcards] = useState([]);
     const [value, setValue] = useState("");
+    const toast = useRef(null);
 
 
     const handleGenerate = () => {
@@ -60,6 +62,9 @@ const FlashcardList = () => {
         getFlashCards()
     }, []);
 
+    const show = (severity,  message, summary = 'Info', ) => {
+        toast.current.show({ severity: severity, summary: summary, detail: message});
+    };
 
     useEffect(() => {
         axios.get("http://localhost:8000/course/getall")
@@ -94,11 +99,15 @@ const FlashcardList = () => {
                         .filter((card) => card.course_id === courseId)
                         .map((flashcard) => {
                             return (
-                                <Flashcard flashcard={flashcard} key={flashcard.id}/>
+                                <>
+                                <Flashcard flashcard={flashcard} key={flashcard._id} getFlashCards={getFlashCards} toast={show}/>
+                                </>
                             );
                         })}
                 </div>
             </div>
+
+            <Toast ref={toast} />
         </>
     );
 };

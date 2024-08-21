@@ -22,7 +22,6 @@ import PsychologyIcon from "@mui/icons-material/Psychology";
 import {useNavigate, useParams} from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
 import axios from "axios";
-import {CheckIcon} from "primereact/icons/check";
 
 const drawerWidth = 240;
 
@@ -32,7 +31,6 @@ const paths = {
     Graded_Assignments: (courseId) => `/assignments/${courseId}`,
     Memory_Flashcards: (courseId) => `/flashcards/${courseId}`,
 };
-
 
 const Main = styled("main", {shouldForwardProp: (prop) => prop !== "open"})(
     ({theme, open}) => {
@@ -199,28 +197,24 @@ const Sidenav = () => {
 
                 <Divider/>
                 <List onClick={() => handleNavigation('/')}>
-                    {["Course"].map((text) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    <LogoutIcon/>
-                                </ListItemIcon>
-                                <ListItemText primary={text}/>
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
+                    <ListItem key='text' disablePadding>
+                        <ListItemButton>
+                            <ListItemIcon>
+                                <i className="pi pi-book text-xl"></i>
+                            </ListItemIcon>
+                            <ListItemText primary={"Courses"}/>
+                        </ListItemButton>
+                    </ListItem>
                 </List>
                 <List onClick={() => handleNavigation('/login')}>
-                    {["Logout"].map((text) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    <LogoutIcon/>
-                                </ListItemIcon>
-                                <ListItemText primary={text}/>
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
+                    <ListItem key='logout' disablePadding>
+                        <ListItemButton>
+                            <ListItemIcon>
+                                <LogoutIcon/>
+                            </ListItemIcon>
+                            <ListItemText primary="Logout"/>
+                        </ListItemButton>
+                    </ListItem>
                 </List>
             </Drawer>
             <Main open={open}>

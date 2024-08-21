@@ -28,7 +28,6 @@ const Code = () => {
                 },
             })
             .then((res) => {
-                console.log("Response:", res.data);
                 setCurrentAssignment(res.data);
                 if (res.data.language) {
                     setFileName(`script.${res.data.language}`);
@@ -97,21 +96,9 @@ const Code = () => {
         return <span>{props.placeholder}</span>;
     };
 
-    //   const countryOptionTemplate = (currentAssignment) => {
-    //     return (
-    //       <div className="flex align-items-center">
-    //         <div>
-    //           {currentAssignment.assgn_type} Week {currentAssignment.week}
-    //         </div>
-    //       </div>
-    //     );
-    //   };
-    //   const handleEditorChange = (value, event) => {
-    //     console.log("here is the current model value:", value, event);
-    //   };
     return (
         <>
-            {/* <Sidenav/>
+            <Sidenav/>
             <Box
                 component="main"
                 sx={{
@@ -124,12 +111,12 @@ const Code = () => {
             >
                 <Grid container spacing={2}>
                     {/* Left side: Question */}
-                    {/* <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={6}>
                         <Card>
                             <CardContent>
                                 {currentAssignment ? (
-                                    // <> */} */}
-                                        {/* <Typography
+                                    <>
+                                        <Typography
                                             variant="subtitle1"
                                             style={{
                                                 marginTop: "10px",
@@ -177,15 +164,13 @@ const Code = () => {
                     </Grid>
 
                     {/* Right side: Code Editor */}
-                    {/* <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={6}>
                         <Grid container spacing={2}>
                             <div className="flex align-middle gap-2 justify-center">
                                 <Button variant="contained" onClick={runCode}>
                                     Run Code
                                 </Button>
                                 <GenAI
-                                    // context={'<|system|> USe the following context to give response \n Question \n' + currentAssignment? currentAssignment.question : '' + '\n Code \n' + editorRef.current.getValue() + '\n User Query \n'}
-                                    context=""
                                     week={12}/>
                             </div>
 
@@ -245,7 +230,7 @@ const Code = () => {
                         </Grid>
                     </Grid>
                 </Grid>
-            // </Box> */} */}
+            </Box>
         </>
     );
 };
