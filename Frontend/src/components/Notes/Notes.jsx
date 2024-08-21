@@ -267,7 +267,7 @@ const Notes = () => {
     doc.addPage(); // Add new page for content
 
     // Set consistent font size and typeface for content
-    const contentFontSize = 10; // Slightly smaller font size for content
+    const contentFontSize = 15; // Slightly smaller font size for content
     const lineHeight = 7; // Adjust line height for tighter spacing
     doc.setFontSize(contentFontSize);
     doc.setFont("Helvetica", "normal");
@@ -440,7 +440,7 @@ const handleSummarize = async (noteId, noteContent) => {
     <Box mt={2}>
         <iframe 
             width="100%" 
-            height="315" 
+            height="515" 
             src={`https://www.youtube.com/embed/${new URL(note.url).searchParams.get('v')}`} 
             title="YouTube video player" 
             frameBorder="0" 
