@@ -114,7 +114,7 @@ async def get_course_week_assignment(
     course = db.course.find_one({"course_id": course_id})
     if not course:
         raise NotExistsError()
-    collection = db.assignment if assgn_type in ["AQ", "PA", "GrPA"] else db.coding_assignment
+    collection = db.assignment if assgn_type in ["AQ", "PA", "GA"] else db.coding_assignment
 
     results = collection.find({"course_id": course_id, "week": week, "assgn_type": assgn_type})
 
