@@ -55,7 +55,7 @@ class Notes(BaseModel):
     course_id: str
     title: str
     content: str
-    url: Optional[HttpUrl] = None
+    url: str = None
 
     @field_validator('url')
     def validate_url_format(cls, url):
@@ -75,7 +75,7 @@ class Notes(BaseModel):
 class NotesUpdate(BaseModel):
     title: str
     content: str
-    url: Optional[HttpUrl] = None
+    url: str = None
 
     @field_validator('url')
     def validate_url_format(cls, url):
