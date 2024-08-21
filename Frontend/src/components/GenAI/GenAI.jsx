@@ -4,11 +4,12 @@ import {Sidebar} from "primereact/sidebar";
 import {InputText} from "primereact/inputtext";
 import {useParams} from "react-router-dom";
 import Markdown from "react-markdown";
+import {Dialog} from "primereact/dialog";
 
 const GenAI = ({week, context}) => {
     const params = useParams()
     const courseId = params.courseId;
-    const [visibleRight, setVisibleRight] = useState(false);
+    const [visible, setVisible] = useState(false);
     const [query, setQuery] = useState("");
     const [text, setText] = useState("");
     const [loading, setLoading] = useState(false);
@@ -33,10 +34,10 @@ const GenAI = ({week, context}) => {
 
     return (
         <>
-            <Button onClick={() => setVisibleRight(true)}>
+            <Button onClick={() => setVisible(true)}>
                 Ask AI
             </Button>
-            <Sidebar visible={visibleRight} position="right" onHide={() => setVisibleRight(false)} className="w-96">
+            <Dialog header="Ask AI" visible={visible} style={{ width: '50vw', height: '75vh' }} onHide={() => {if (!visible) return; setVisible(false); }}>
                 <div className="flex flex-col justify-between h-full">
                     <div>
                         <p className="mb-2">Write a query to get AI reply {loading ?
@@ -50,7 +51,7 @@ const GenAI = ({week, context}) => {
                         <Button icon="pi pi-send" className="p-button-primary" onClick={handleGenerate}/>
                     </div>
                 </div>
-            </Sidebar>
+            </Dialog>
         </>
     );
 };

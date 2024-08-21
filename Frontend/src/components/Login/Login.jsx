@@ -7,7 +7,7 @@ const LoginPage = (props) => {
     const params = useParams()
     const token = params.token
     const user_type = params.user_type
-
+    
 
     if (token && token.length > 20) {
         localStorage.setItem("token", params.token)

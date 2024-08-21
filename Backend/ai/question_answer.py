@@ -51,3 +51,37 @@ class QuestionAnswerGenerator():
             "text": f"{text}"
         })
         return json.loads(summary.json())
+
+
+class SimilarQuestionAnswerGenerator():
+    def __init__(self) -> None:
+        self.parser = PydanticOutputParser(pydantic_object=QuestionsSchema)
+        self.model = ChatGoogleGenerativeAI(model='gemini-1.5-flash', google_api_key=GOOGLE_API_KEY)
+        self.template = """
+    You are a MCQ generator
+    Generate 5 multiple-choice questions based on the following text. 
+    Ensure that the questions are of similar difficulty and style to the provided questions. 
+    Each question should have one correct answer and three distractors.
+
+    TEXT: {text}
+
+    {format_instructions}
+"""
+
+    def get_chain(self):
+        format_instructions = self.parser.get_format_instructions()
+
+        prompt = PromptTemplate(
+            template=self.template,
+            input_variables=["text"],
+            partial_variables={"format_instructions": format_instructions}
+        )
+        chain = prompt | self.model | self.parser
+        return chain
+    
+    def invoke_chain(self, text):
+        chain = self.get_chain()
+        summary = chain.invoke({
+            "text": f"{text}"
+        })
+        return json.loads(summary.json())

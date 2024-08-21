@@ -198,7 +198,7 @@ const Sidenav = () => {
                                 handleNavigation(paths.Context_Search(courseId))
                             }}>
                             <ListItemIcon><i className="pi pi-microchip-ai text-xl"></i></ListItemIcon>
-                            <ListItemText primary="Course Search"/>
+                            <ListItemText primary="AI Ask"/>
                         </ListItemButton>
                     </ListItem>
                 </List>
@@ -220,7 +220,10 @@ const Sidenav = () => {
                             <ListItemIcon>
                                 <LogoutIcon/>
                             </ListItemIcon>
-                            <ListItemText primary="Logout"/>
+                            <ListItemText primary="Logout" onClick={ () => {
+                                localStorage.removeItem('token');
+                                window.location.href = '/login'; 
+                            }}/>
                         </ListItemButton>
                     </ListItem>
                 </List>
