@@ -13,6 +13,7 @@ import {
   MenuItem,
   IconButton,
   Card,
+  Grid,
   CardContent,
   Checkbox,
   FormControlLabel,
@@ -184,11 +185,24 @@ const handleAddQuestion = () => {
     <Container>
       <InstructorSidenav />
       <Box marginLeft="240px" my={4}>
-        <Typography variant="h4" gutterBottom>
-          Set Questions
-        </Typography> 
+        
+        <Card variant="outlined" style={{ marginBottom: "16px" }}>
+          <CardContent>
+{/* 
+          <Typography variant="h4" gutterBottom>
+        </Typography>  */}
 
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        
+
+
+        <Typography variant="h4" align="center" gutterBottom>
+        Set Questions
+
+            </Typography>
+
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DateTimePicker
             label="Assignment Deadline"
             value={deadline}
@@ -196,9 +210,10 @@ const handleAddQuestion = () => {
             renderInput={(params) => <TextField {...params} fullWidth />}
           />
         </LocalizationProvider>
+              </Grid> </Grid>
 
-        <Card variant="outlined" style={{ marginBottom: "16px" }}>
-          <CardContent>
+<br></br>
+
             <TextField
               label="Question"
               variant="outlined"

@@ -23,8 +23,34 @@ const Notes = () => {
     const [isSummaryVisible, setIsSummaryVisible] = useState({});
     const [generatedQuestions, setGeneratedQuestions] = useState({});
 
+    const stripHtmlTags = (html) => {
+      // Create a temporary DOM element to parse HTML
+      const tmp = document.createElement("div");
+      tmp.innerHTML = html;
+  
+      // Remove specific class names and inline styles
+      const elements = tmp.querySelectorAll("*");
+      elements.forEach((element) => {
+          element.removeAttribute("style");
+          element.removeAttribute("class");
+      });
+  
+      // Remove <style> and <script> tags
+      const styleAndScriptTags = tmp.querySelectorAll("style, script");
+      styleAndScriptTags.forEach(tag => tag.remove());
+  
+      // Get cleaned text content
+      let text = tmp.textContent || tmp.innerText || "";
+  
+      // Replace multiple consecutive newlines with a maximum of two
+      text = text.replace(/(\r\n|\n|\r){3,}/g, '\n\n');
+  
+      return text;
+  };
+  
 
 
+  
     useEffect(() => {
         if (courseId) {
             axios
@@ -109,95 +135,175 @@ const Notes = () => {
     //     doc.save(`${title}.pdf`);
     // };
 
-    const handleDownloadPDF = (note) => {
-      const { title, content } = note;
+  //   const handleDownloadPDF = (note) => {
+  //     const { title, content } = note;
   
-      // Function to remove HTML tags
-      const stripHtmlTags = (html) => {
-          const tmp = document.createElement("div");
-          tmp.innerHTML = html;
-          return tmp.textContent || tmp.innerText || "";
-      };
+  //     // Function to remove HTML tags
+  //     const stripHtmlTags = (html) => {
+  //         const tmp = document.createElement("div");
+  //         tmp.innerHTML = html;
+  //         return tmp.textContent || tmp.innerText || "";
+  //     };
   
-      // Remove HTML tags from content
-      const cleanedContent = stripHtmlTags(content);
+  //     // Remove HTML tags from content
+  //     const cleanedContent = stripHtmlTags(content);
   
-      // Create a new jsPDF instance
-      const doc = new jsPDF();
+  //     // Create a new jsPDF instance
+  //     const doc = new jsPDF();
   
-      // Define colors and fonts
-      const titleColor = [33, 37, 41]; // Dark grey color for title
-      const contentColor = [102, 102, 102]; // Gray color for content
-      const borderColor = [200, 220, 255]; // Light blue border color
+  //     // Define colors and fonts
+  //     const titleColor = [33, 37, 41]; // Dark grey color for title
+  //     const contentColor = [102, 102, 102]; // Gray color for content
+  //     const borderColor = [200, 220, 255]; // Light blue border color
   
-      // Function to add header
-      const addHeader = () => {
-          doc.setFontSize(16);
-          doc.setFont("Helvetica", "bold");
-          doc.setTextColor(...titleColor);
-          doc.text(title, doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
-      };
+  //     // Function to add header
+  //     const addHeader = () => {
+  //         doc.setFontSize(16);
+  //         doc.setFont("Helvetica", "bold");
+  //         doc.setTextColor(...titleColor);
+  //         doc.text(title, doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
+  //     };
   
-      // Function to add footer
-      const addFooter = (pageNumber) => {
-          doc.setFontSize(10);
-          doc.setFont("Helvetica", "normal");
-          doc.setTextColor(100);
-          doc.text(`Page ${pageNumber}`, doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: 'right' });
-      };
+  //     // Function to add footer
+  //     const addFooter = (pageNumber) => {
+  //         doc.setFontSize(10);
+  //         doc.setFont("Helvetica", "normal");
+  //         doc.setTextColor(100);
+  //         doc.text(`Page ${pageNumber}`, doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: 'right' });
+  //     };
   
-      // Add title page
-      doc.setFontSize(20); // Slightly increased font size for title page
-      doc.setFont("Helvetica", "bold");
-      doc.setTextColor(...titleColor);
-      doc.text(title, doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() / 2 - 10, { align: 'center' });
+  //     // Add title page
+  //     doc.setFontSize(24);
+  //     doc.setFont("Helvetica", "bold");
+  //     doc.setTextColor(...titleColor);
+  //     doc.text(title, doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() / 2 - 10, { align: 'center' });
   
-      // Add a subtle line under the title
-      doc.setDrawColor(...borderColor);
-      doc.setLineWidth(1);
-      doc.line(20, doc.internal.pageSize.getHeight() / 2 + 5, doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() / 2 + 5);
+  //     // Add a subtle line under the title
+  //     doc.setDrawColor(...borderColor);
+  //     doc.setLineWidth(1);
+  //     doc.line(20, doc.internal.pageSize.getHeight() / 2 + 5, doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() / 2 + 5);
   
-      doc.addPage(); // Add new page for content
+  //     doc.addPage(); // Add new page for content
   
-      // Set consistent font size and typeface for content
-      const contentFontSize = 12; // Slightly increased font size for content
-      doc.setFontSize(contentFontSize);
-      doc.setFont("Helvetica", "normal");
-      doc.setTextColor(...contentColor);
+  //     // Set consistent font size and typeface for content
+  //     const contentFontSize = 11; // Font size for content
+  //     const lineHeight = 6; // Reduced line height to minimize gap between lines
+  //     doc.setFontSize(contentFontSize);
+  //     doc.setFont("Helvetica", "normal");
+  //     doc.setTextColor(...contentColor);
   
-      // Add header and footer to the first content page
-      addHeader();
-      addFooter(1);
+  //     // Add header and footer to the first content page
+  //     addHeader();
+  //     addFooter(1);
   
-      // Adjust margins and line spacing
-      const margins = { top: 20, bottom: 20, left: 20, right: 20 }; // Reduced top margin for less gap
-      const contentX = margins.left;
-      let contentY = margins.top;
-      let pageNumber = 1;
+  //     // Adjust margins and line spacing
+  //     const margins = { top: 30, bottom: 20, left: 20, right: 20 };
+  //     const contentX = margins.left;
+  //     let contentY = margins.top;
+  //     let pageNumber = 1;
   
-      // Split content into lines that fit the page width
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const lines = doc.splitTextToSize(cleanedContent, pageWidth - margins.left - margins.right);
+  //     // Split content into lines that fit the page width
+  //     const pageWidth = doc.internal.pageSize.getWidth();
+  //     const lines = doc.splitTextToSize(cleanedContent, pageWidth - margins.left - margins.right);
   
-      // Add each line to the PDF, ensuring it fits within the margins
-      lines.forEach((line) => {
-          if (contentY > doc.internal.pageSize.getHeight() - margins.bottom) {
-              doc.addPage();
-              contentY = margins.top;
-              pageNumber += 1;
-              addHeader();
-              addFooter(pageNumber);
-          }
-          doc.text(line, contentX, contentY);
-          contentY += contentFontSize * 1.2; // Adjusted line height for closer spacing
-      });
+  //     // Add each line to the PDF, ensuring it fits within the margins
+  //     lines.forEach((line) => {
+  //         if (contentY > doc.internal.pageSize.getHeight() - margins.bottom) {
+  //             doc.addPage();
+  //             contentY = margins.top;
+  //             pageNumber += 1;
+  //             addHeader();
+  //             addFooter(pageNumber);
+  //         }
+  //         doc.text(line, contentX, contentY);
+  //         contentY += lineHeight; // Reduced line height for tighter spacing
+  //     });
   
-      // Save the PDF
-      doc.save(`${title}.pdf`);
-  };
+  //     // Save the PDF
+  //     doc.save(`${title}.pdf`);
+  // };
   
-  
-  
+  const handleDownloadPDF = (note) => {
+    const { title, content } = note;
+
+    // Remove HTML tags and excessive empty lines from content
+    const cleanedContent = stripHtmlTags(content);
+
+    // Create a new jsPDF instance
+    const doc = new jsPDF();
+
+    // Define colors and fonts
+    const titleColor = [33, 37, 41]; // Dark grey color for title
+    const contentColor = [102, 102, 102]; // Gray color for content
+    const borderColor = [200, 220, 255]; // Light blue border color
+
+    // Function to add header
+    const addHeader = () => {
+        doc.setFontSize(16);
+        doc.setFont("Helvetica", "bold");
+        doc.setTextColor(...titleColor);
+        doc.text(title, doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
+    };
+
+    // Function to add footer
+    const addFooter = (pageNumber) => {
+        doc.setFontSize(8); // Smaller font size for footer
+        doc.setFont("Helvetica", "normal");
+        doc.setTextColor(100);
+        doc.text(`Page ${pageNumber}`, doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: 'right' });
+    };
+
+    // Add title page
+    doc.setFontSize(24);
+    doc.setFont("Helvetica", "bold");
+    doc.setTextColor(...titleColor);
+    doc.text(title, doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() / 2 - 10, { align: 'center' });
+
+    // Add a subtle line under the title
+    doc.setDrawColor(...borderColor);
+    doc.setLineWidth(1);
+    doc.line(20, doc.internal.pageSize.getHeight() / 2 + 5, doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() / 2 + 5);
+
+    doc.addPage(); // Add new page for content
+
+    // Set consistent font size and typeface for content
+    const contentFontSize = 15; // Slightly smaller font size for content
+    const lineHeight = 7; // Adjust line height for tighter spacing
+    doc.setFontSize(contentFontSize);
+    doc.setFont("Helvetica", "normal");
+    doc.setTextColor(...contentColor);
+
+    // Add header and footer to the first content page
+    addHeader();
+    addFooter(1);
+
+    // Adjust margins and line spacing
+    const margins = { top: 25, bottom: 20, left: 15, right: 15 }; // Reduced margins for more content space
+    const contentX = margins.left;
+    let contentY = margins.top;
+    let pageNumber = 1;
+
+    // Split content into lines that fit the page width
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const lines = doc.splitTextToSize(cleanedContent, pageWidth - margins.left - margins.right);
+
+    // Add each line to the PDF, ensuring it fits within the margins
+    lines.forEach((line) => {
+        if (contentY > doc.internal.pageSize.getHeight() - margins.bottom) {
+            doc.addPage();
+            contentY = margins.top;
+            pageNumber += 1;
+            addHeader();
+            addFooter(pageNumber);
+        }
+        doc.text(line, contentX, contentY);
+        contentY += lineHeight; // Adjust line height for tighter spacing
+    });
+
+    // Save the PDF
+    doc.save(`${title}.pdf`);
+};
+
 
 
 const handleGenerate = async (noteId, noteContent) => {
@@ -318,7 +424,7 @@ const handleSummarize = async (noteId, noteContent) => {
 
     </Box>
                 
-                <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
+                <Box sx={{ position: 'absolute', top: 14, right: 10 }}>
                     <DownloadButton onClick={() => handleDownloadPDF(note)} />
                 </Box>
             
@@ -334,7 +440,7 @@ const handleSummarize = async (noteId, noteContent) => {
     <Box mt={2}>
         <iframe 
             width="100%" 
-            height="315" 
+            height="515" 
             src={`https://www.youtube.com/embed/${new URL(note.url).searchParams.get('v')}`} 
             title="YouTube video player" 
             frameBorder="0" 
@@ -343,7 +449,7 @@ const handleSummarize = async (noteId, noteContent) => {
         </iframe>
     </Box>
 )}
-
+<br></br> <br></br>
             
                 {/* Conditionally render summary or content */}
                 {isSummaryVisible[note._id] && note.summary ? (

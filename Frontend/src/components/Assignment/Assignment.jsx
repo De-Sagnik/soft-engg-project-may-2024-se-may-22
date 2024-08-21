@@ -171,7 +171,7 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
     try {
       const noteContent = questions.map((q) => q.question).join(" "); // Combine all questions into one text
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}generate_questions`,
+        `${process.env.REACT_APP_BACKEND_URL}generate_assignment_questions`,
         { text: noteContent },
         {
           headers: {

@@ -59,8 +59,9 @@ class SimilarQuestionAnswerGenerator():
         self.model = ChatGoogleGenerativeAI(model='gemini-1.5-flash', google_api_key=GOOGLE_API_KEY)
         self.template = """
     You are a MCQ generator
-    Generate 5 multiple-choice questions based on the following text. 
+    Generate 3 multiple-choice questions based on the following text. 
     Ensure that the questions are of similar difficulty and style to the provided questions. 
+    Give different questions and answers which are similar to the provided questions.
     Each question should have one correct answer and three distractors.
 
     TEXT: {text}
