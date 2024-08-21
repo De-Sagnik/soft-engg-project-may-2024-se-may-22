@@ -85,10 +85,10 @@ const FlashcardList = () => {
             <div className="flex align-middle justify-center">
                 <div>
                     <IconField>
-                        <InputText value={value} onChange={(e) => setValue(e.target.value)}/>
+                        <InputText value={value} placeholder="Enter ..." onChange={(e) => setValue(e.target.value)}/>
                     </IconField>
                 </div>
-                <div><Button className="my-auto ml-2" severity="help" onClick={handleGenerate}>
+                <div><Button className="my-auto ml-2" style={{backgroundColor: '#1976d2'}} onClick={handleGenerate}>
                     Generate
                 </Button></div>
                 <div><FlashCardCreate getFlashCards={getFlashCards} toast={show}></FlashCardCreate></div>
