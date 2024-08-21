@@ -220,7 +220,10 @@ const Sidenav = () => {
                             <ListItemIcon>
                                 <LogoutIcon/>
                             </ListItemIcon>
-                            <ListItemText primary="Logout"/>
+                            <ListItemText primary="Logout" onClick={ () => {
+                                localStorage.removeItem('token');
+                                window.location.href = '/login'; 
+                            }}/>
                         </ListItemButton>
                     </ListItem>
                 </List>
