@@ -38,17 +38,15 @@ export default function EditFlashCard({flashcard, getFlashCards, toast}) {
     }
 
     const showDeleteMessage = () => {
-        console.log(toast)
         toast('success', 'Success', 'Deleted Successfully');
     }
     const showUpdateMessage = () => {
-        console.log(toast)
         toast('success', 'Success', 'Updated Successfully');
     }
 
     return (
         <>
-            <Button icon="pi pi-pencil" className="-mt-5 -mr-5" rounded text aria-label="Filter"
+            <Button icon="pi pi-pencil" className="-mt-5 -mr-10" rounded text aria-label="Filter"
                     onClick={() => setVisible(true)}/>
             <Dialog header="Edit Flashcard" visible={visible} style={{width: '60vw', height: '60vh'}} onHide={() => {
                 if (!visible) return;

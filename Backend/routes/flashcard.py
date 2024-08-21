@@ -21,10 +21,6 @@ async def create_flash_card(
 ):
     flash_card.user_id = current_user.user_id
 
-    # check whether the user has enrolled in that course or not
-    if flash_card.course_id not in current_user.courses:
-        raise HTTPException(404, "User has not enrolled in this courses")
-
     fashcard_in = db.flashcard.insert_one(dict(flash_card))
     return {"message": "success", "db_entry_id": str(fashcard_in.inserted_id)}
 

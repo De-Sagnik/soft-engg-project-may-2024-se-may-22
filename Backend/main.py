@@ -88,7 +88,7 @@ async def websocket_endpoint(websocket: WebSocket):
         websocket.close()
         return
     
-    query = format_query(request.get('query'), request.get('week'), request.get('course_id') is None)
+    query = format_query(request.get('query'), request.get('week'), request.get('course_id'))
     await generate_chunks(query, websocket)
     await websocket.close()
 

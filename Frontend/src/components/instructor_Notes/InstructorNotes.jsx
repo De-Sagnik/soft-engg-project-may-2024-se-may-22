@@ -20,11 +20,39 @@ const [noteToDelete, setNoteToDelete] = useState(null);
 const [courses, setCourses] = useState([]);
 const [allCourses, setAllCourses] = useState([]); // State to hold courses
 
+// const handleUpload = () => {
+//     const newQuestion = {
+//       course_id: currentNote.course_id,
+//       title: currentNote.content.find(block => block.type === 'title')?.value || '',
+//       content: currentNote.content.find(block => block.type === 'text')?.value || ''
+//     };
+
+//     console.log(newQuestion);
+
+//     axios.post(`http://localhost:8000/notes/create`, newQuestion, {
+//       headers: {
+//         Authorization: 'Bearer ' + localStorage.getItem('token')
+//       }
+//     })
+//     .then(response => {
+//       console.log("Notes added successfully:", response.data);
+//       // Clear the form and update UI
+//       setCurrentNote({ id: null, subject: '', content: [], course_id: '', url: '' });
+//       setOpen(false);
+//       // Optionally refresh the notes list or update UI to reflect the new note
+//     })
+//     .catch(error => {
+//       console.error("Error adding notes:", error);
+//       // Handle error (e.g., show an error message to the user)
+//     });
+// };
+
 const handleUpload = () => {
     const newQuestion = {
       course_id: currentNote.course_id,
       title: currentNote.content.find(block => block.type === 'title')?.value || '',
-      content: currentNote.content.find(block => block.type === 'text')?.value || ''
+      content: currentNote.content.find(block => block.type === 'text')?.value || '',
+      url: currentNote.content.find(block => block.type === 'link')?.value || '' // Include the URL here
     };
 
     console.log(newQuestion);
@@ -46,6 +74,7 @@ const handleUpload = () => {
       // Handle error (e.g., show an error message to the user)
     });
 };
+
 
   useEffect(() => {
     axios.get("http://localhost:8000/course/getall")
@@ -264,6 +293,8 @@ const handleUpload = () => {
                                             disabled={viewing} // Disable if viewing
                                         />
                                     )}
+
+                                    
                                     {block.type === 'subheading' && (
                                         <TextField
                                             margin="dense"
@@ -277,6 +308,19 @@ const handleUpload = () => {
                                         />
                                     )}
                                     
+                                    {block.type === 'link' && (
+    <TextField
+        margin="dense"
+        label="URL"
+        type="url"
+        fullWidth
+        variant="standard"
+        value={block.value}
+        onChange={(e) => handleContentChange(index, e.target.value)}
+        disabled={viewing} // Disable if viewing
+    />
+)}
+
                                     {/* Handle other block types here */}
                                 </div>
                             ))}

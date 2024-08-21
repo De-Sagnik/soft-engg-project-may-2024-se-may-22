@@ -13,7 +13,7 @@ const Flashcard = ({flashcard, getFlashCards, toast}) => {
             <div className='container' ref={frontEl}>
                 <div
                     className={`card ${flip ? 'flip' : ''}`}>
-                    <div className="front  w-full h-full">
+                    <div className="front  w-full h-full mb-10">
                         <div className="text-right ">
                             <EditFlashCard  flashcard={flashcard} getFlashCards={getFlashCards} toast={toast}/>
                         </div>
@@ -25,7 +25,7 @@ const Flashcard = ({flashcard, getFlashCards, toast}) => {
                         </div>
                     </div>
 
-                    <div className="back w-full h-full" ref={backEl}
+                    <div className="back w-full h-full mb-10" ref={backEl}
                     >
                         <div className="text-right">
                             <EditFlashCard  flashcard={flashcard} getFlashCards={getFlashCards} toast={toast}/>
