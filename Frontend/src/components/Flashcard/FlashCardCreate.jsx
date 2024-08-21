@@ -36,7 +36,7 @@ export default function FlashCardCreate({getFlashCards, toast}) {
 
     return (
         <>
-            <Button className="my-auto ml-2" severity="warning" onClick={() => setVisible(true)}>
+            <Button className="my-auto ml-2" style={{backgroundColor: '#1976d2'}} onClick={() => setVisible(true)}>
                 Create
             </Button>
             <Dialog header="Edit Flashcard" visible={visible} style={{width: '60vw', height: '60vh'}} onHide={() => {
