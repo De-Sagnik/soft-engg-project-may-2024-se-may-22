@@ -22,17 +22,16 @@ import PsychologyIcon from "@mui/icons-material/Psychology";
 import {useNavigate, useParams} from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
 import axios from "axios";
-import {CheckIcon} from "primereact/icons/check";
 
 const drawerWidth = 240;
 
 const paths = {
-    // Notes: (courseId) => `/notes/${courseId}`,
+    Notes: (courseId) => `/notes/${courseId}`,
     Coding_Assignments: (courseId) => `/code/${courseId}`,
     Graded_Assignments: (courseId) => `/assignments/${courseId}`,
     Memory_Flashcards: (courseId) => `/flashcards/${courseId}`,
+    Context_Search: (courseId) => `/context-search/${courseId}`,
 };
-
 
 const Main = styled("main", {shouldForwardProp: (prop) => prop !== "open"})(
     ({theme, open}) => {
@@ -99,7 +98,6 @@ const Sidenav = () => {
                 console.error("Error fetching courses:", err);
             });
     }, []);
-    const theme = useTheme();
     const [open, setOpen] = React.useState(true);
     const [isNotesClicked, setIsNotesClicked] = React.useState(false);
     const navigate = useNavigate();
@@ -194,33 +192,37 @@ const Sidenav = () => {
                         </ListItemButton>
                     </ListItem>
 
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            onClick={() => {
+                                handleNavigation(paths.Context_Search(courseId))
+                            }}>
+                            <ListItemIcon><i className="pi pi-microchip-ai text-xl"></i></ListItemIcon>
+                            <ListItemText primary="Course Search"/>
+                        </ListItemButton>
+                    </ListItem>
                 </List>
-
 
                 <Divider/>
                 <List onClick={() => handleNavigation('/')}>
-                    {["Course"].map((text) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    <LogoutIcon/>
-                                </ListItemIcon>
-                                <ListItemText primary={text}/>
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
+                    <ListItem key='text' disablePadding>
+                        <ListItemButton>
+                            <ListItemIcon>
+                                <i className="pi pi-book text-xl"></i>
+                            </ListItemIcon>
+                            <ListItemText primary={"Courses"}/>
+                        </ListItemButton>
+                    </ListItem>
                 </List>
                 <List onClick={() => handleNavigation('/login')}>
-                    {["Logout"].map((text) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    <LogoutIcon/>
-                                </ListItemIcon>
-                                <ListItemText primary={text}/>
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
+                    <ListItem key='logout' disablePadding>
+                        <ListItemButton>
+                            <ListItemIcon>
+                                <LogoutIcon/>
+                            </ListItemIcon>
+                            <ListItemText primary="Logout"/>
+                        </ListItemButton>
+                    </ListItem>
                 </List>
             </Drawer>
             <Main open={open}>

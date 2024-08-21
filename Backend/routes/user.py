@@ -1,13 +1,14 @@
-from fastapi import APIRouter, Depends, Security, HTTPException, Path
+from fastapi import APIRouter, Depends, Security, HTTPException, Path, Query
 from typing import Annotated, List
 from utils.security import get_current_active_user
 from models.user import User
-from models.assignment import AssignmentSubmissionForm
-from models.model import GenerateResponse, Query
-from utils.response import objectsEntity, responses
-from utils.validation import NotFoundError
+from models.assignment import AssignmentSubmissionForm, LastSubmission, AssignmentType
+from models.model import GenerateResponse, AIQuery
+from utils.response import objectsEntity, objectEntity, responses
+from utils.validation import NotFoundError, NotExistsError
 from bson import ObjectId
 from ai.gemini import search_generate, generate
+from datetime import datetime
 
 from database.db import db
 
@@ -51,9 +52,10 @@ async def get_flash_card_course_and_week_filter(
 
 @user.get('/flashcards', responses=responses)
 async def get_all_flashcards(current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])]):
-    print(current_user.user_id)
     flash_cards = db.flashcard.find({"user_id": current_user.user_id})
-    return objectsEntity(flash_cards)
+    arr = objectsEntity(flash_cards)
+    arr.reverse()
+    return arr
 
 @user.post('/search_generate')
 async def search_and_generate_response(query: GenerateResponse):
@@ -63,7 +65,7 @@ async def search_and_generate_response(query: GenerateResponse):
     return {'response': search_generate(query.course_id, query.week, query.query)}
 
 @user.post('/generate')
-async def generate_response(query: Query, current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])]):
+async def generate_response(query: AIQuery, current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])]):
     return {'response': generate(query.query)}
 
 @user.post('/register_course', include_in_schema=False)
@@ -85,14 +87,23 @@ async def register_courses(
     raise HTTPException(status_code=500, detail="Something went wrong")
 
 
-
 # Submitting the assignment answers by users
+
+from utils.grading import *
 
 @user.post('/submit_answer', responses=responses)
 async def submit_answers(
     current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])],
     submissions: List[AssignmentSubmissionForm]
 ):
+    assignment_id = dict(submissions[0])['assgn_id']
+    assignment = db.assignment.find_one({"_id": ObjectId(assignment_id)})
+    coding_assignment = db.coding_assignment.find_one({"_id": ObjectId(assignment_id)})
+
+    print(assignment, coding_assignment)
+
+    assgn = assignment if assignment else coding_assignment
+
     submission_dicts = [
         {
             **submission.dict(),               
@@ -103,9 +114,24 @@ async def submit_answers(
         for submission in  submissions
     ]
 
+    db.last_submission.update_one({ 
+        "user_id": current_user.user_id,
+        "course_id": assgn["course_id"],
+        "week": assgn["week"],
+        "assgn_type": assgn["assgn_type"]}, { "$set": {
+                                    "user_id": current_user.user_id,
+                                    "course_id": assgn["course_id"],
+                                    "week": assgn["week"],
+                                    "assgn_type": assgn["assgn_type"],
+                                    "last_submission": datetime.now() }
+    }, upsert=True)
+
+
     submit = db.submission.insert_many(submission_dicts)
+
     if submit.acknowledged:
         return {"message": "success", "db_entry_ids": [str(id) for id in submit.inserted_ids]}
+    
     raise HTTPException(status_code=500, detail="An error occurred while submitting the answers.")
    
 
@@ -114,9 +140,26 @@ async def submit_answers(
     current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])],
     course_id: str
 ):
+    user_marks = objectsEntity(db.marks.find({"course_id": course_id}).sort("week", 1))
     # Returuns the mark week_wise
-    return ""
+    return user_marks
 
+@user.get('/last_submission', responses=responses)
+async def last_submission_time(
+    current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])],
+    course_id: str,
+    week: int = Query(le=12, ge=1),
+    assgn_type: AssignmentType = Query(description="the type of the assignment")
+):
+    course = db.course.find_one({"course_id": course_id})
+    if not course:
+        raise NotExistsError()
+    
+    last_submission_time = db.last_submission.find({
+        "user_id": current_user.user_id,
+        "course_id": course_id,
+        "assgn_type": assgn_type,
+        "week": week
+    })
 
-# Evaluate the assignment and store the marks consecutively for each week and assignment type
-# As a background task with crontab
+    return objectsEntity(last_submission_time)

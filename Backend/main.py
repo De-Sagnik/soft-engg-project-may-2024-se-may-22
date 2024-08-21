@@ -10,6 +10,9 @@ from routes.coding_assignments import coding_assignment
 from routes.flashcard import fc
 from routes.summarize import summarizer
 from routes.assignment import assgn
+from routes.question_answer import question_answer
+from routes.generate_assignment_questions import assignment_question_answer
+
 from utils.security import auth
 from utils.response import responses
 from utils.extra import tags_metadata
@@ -22,6 +25,7 @@ from asyncio import sleep
 from ai.gemini import generate_chunks
 from threading import Thread
 from ai.format_query import format_query
+
 
 
 app = FastAPI(
@@ -46,6 +50,8 @@ app.include_router(auth)
 app.include_router(course)
 app.include_router(course_material)
 app.include_router(fc)
+app.include_router(question_answer)
+app.include_router(assignment_question_answer)
 app.include_router(summarizer)
 app.include_router(assgn)
 app.include_router(coding_assignment)
@@ -82,7 +88,7 @@ async def websocket_endpoint(websocket: WebSocket):
         websocket.close()
         return
     
-    query = format_query(request.get('query'), request.get('week'), request.get('course_id') is None)
+    query = format_query(request.get('query'), request.get('week'), request.get('course_id'))
     await generate_chunks(query, websocket)
     await websocket.close()
 
@@ -111,4 +117,4 @@ async def startup_event():
 
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(app="main:app", host='0.0.0.0', port=8000)
+    uvicorn.run(app="main:app", host='0.0.0.0', port=8000, reload=True)

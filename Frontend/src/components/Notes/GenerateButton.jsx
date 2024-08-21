@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@mui/material';
 
-const SummarizeButton = ({ onClick, buttonText }) => {
+const GenerateButton = ({ onClick, buttonText }) => {
     return (
         <Button variant="contained" onClick={onClick}>
             {buttonText}
@@ -9,4 +9,4 @@ const SummarizeButton = ({ onClick, buttonText }) => {
     );
 };
 
-export default SummarizeButton;
+export default GenerateButton;

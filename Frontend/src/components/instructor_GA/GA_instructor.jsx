@@ -24,6 +24,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 
+
 const Instructor = () => {
   const [questions, setQuestions] = useState([]);
   const [questionText, setQuestionText] = useState("");
@@ -122,7 +123,9 @@ const handleAddQuestion = () => {
     question: questionText,
     q_type: questionType,
     options: questionType !== "Numerical" ? options : [],
-    answers: questionType !== "Numerical" ? correctAnswers : [],
+    answers: questionType !== "Numerical"
+      ? correctAnswers.map(index => options[index])
+      : [],
     assgn_type: assignmentType,
     course_id: courseId,
     week: parseInt(week, 10), // Ensure week is a number
@@ -148,6 +151,7 @@ const handleAddQuestion = () => {
 
   resetForm();
 };
+
 
 
   const resetForm = () => {
@@ -182,7 +186,7 @@ const handleAddQuestion = () => {
       <Box marginLeft="240px" my={4}>
         <Typography variant="h4" gutterBottom>
           Set Questions
-        </Typography>
+        </Typography> 
 
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DateTimePicker

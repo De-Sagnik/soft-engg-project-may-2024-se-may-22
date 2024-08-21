@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Sidenav from "../Sidenav";
 import Flashcard from "./Flashcard";
 import "../../App.css";
@@ -8,12 +8,15 @@ import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {generate_flashcard} from "./generate";
 import {useParams} from "react-router-dom";
+import {Toast} from "primereact/toast";
+import FlashCardCreate from "./FlashCardCreate";
 
 const FlashcardList = () => {
     const params = useParams()
     const courseId = params.courseId;
     const [flashcards, setFlashcards] = useState([]);
     const [value, setValue] = useState("");
+    const toast = useRef(null);
 
 
     const handleGenerate = () => {
@@ -60,6 +63,9 @@ const FlashcardList = () => {
         getFlashCards()
     }, []);
 
+    const show = (severity,  message, summary = 'Info', ) => {
+        toast.current.show({ severity: severity, summary: summary, detail: message});
+    };
 
     useEffect(() => {
         axios.get("http://localhost:8000/course/getall")
@@ -82,9 +88,10 @@ const FlashcardList = () => {
                         <InputText value={value} onChange={(e) => setValue(e.target.value)}/>
                     </IconField>
                 </div>
-                <div><Button className="my-auto ml-2" color="primary" onClick={handleGenerate}>
+                <div><Button className="my-auto ml-2" severity="help" onClick={handleGenerate}>
                     Generate
                 </Button></div>
+                <div><FlashCardCreate getFlashCards={getFlashCards} toast={show}></FlashCardCreate></div>
             </div>
 
 
@@ -94,11 +101,15 @@ const FlashcardList = () => {
                         .filter((card) => card.course_id === courseId)
                         .map((flashcard) => {
                             return (
-                                <Flashcard flashcard={flashcard} key={flashcard.id}/>
+                                <>
+                                <Flashcard flashcard={flashcard} key={flashcard._id} getFlashCards={getFlashCards} toast={show}/>
+                                </>
                             );
                         })}
                 </div>
             </div>
+
+            <Toast ref={toast} />
         </>
     );
 };
