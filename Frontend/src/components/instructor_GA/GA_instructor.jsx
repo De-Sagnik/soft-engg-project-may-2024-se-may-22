@@ -123,7 +123,9 @@ const handleAddQuestion = () => {
     question: questionText,
     q_type: questionType,
     options: questionType !== "Numerical" ? options : [],
-    answers: questionType !== "Numerical" ? correctAnswers : [],
+    answers: questionType !== "Numerical"
+      ? correctAnswers.map(index => options[index])
+      : [],
     assgn_type: assignmentType,
     course_id: courseId,
     week: parseInt(week, 10), // Ensure week is a number
@@ -149,6 +151,7 @@ const handleAddQuestion = () => {
 
   resetForm();
 };
+
 
 
   const resetForm = () => {

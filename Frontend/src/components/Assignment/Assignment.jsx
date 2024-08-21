@@ -27,6 +27,21 @@ import { useParams } from "react-router-dom";
 
 const drawerWidth = 240;
 
+const formatDateTime = (dateString) => {
+  const date = new Date(dateString);
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZoneName: 'short',
+  };
+  return date.toLocaleDateString('en-US', options);
+};
+
+
 const QuestionCard = ({ question, handle_answer_change, user_answers }) => {
   const handleChange = (event) => {
     if (question.q_type === "MCQ") {
@@ -308,8 +323,7 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
               variant="subtitle1"
               style={{ marginTop: "10px", color: "red", fontWeight: "bold" }}
             >
-              Deadline:
-              {deadline}
+              Deadline: {deadline}
             </Typography>
             {questions.map((question) => (
               <QuestionCard
@@ -354,7 +368,7 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
       <strong>Question {index + 1}:</strong> {questionObj.question}
     </Typography>
     <Typography variant="body2">
-      <FormControlLabel
+      {/* <FormControlLabel
         control={
           <Checkbox
             checked={userSelections[questionObj.question] === questionObj.option1}
@@ -364,29 +378,43 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
           />
         }
         label={<strong>Option 1:</strong> + questionObj.option1}
-      />
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={userSelections[questionObj.question] === questionObj.option2}
-            onChange={() => handleOptionChange(questionObj.question, questionObj.option2)}
-            color="primary"
-            style={{ borderRadius: '50%' }}
-          />
-        }
-        label={<strong>Option 2:</strong> + questionObj.option2}
-      />
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={userSelections[questionObj.question] === questionObj.option3}
-            onChange={() => handleOptionChange(questionObj.question, questionObj.option3)}
-            color="primary"
-            style={{ borderRadius: '50%' }}
-          />
-        }
-        label={<strong>Option 3:</strong> + questionObj.option3}
-      />
+      /> */}
+
+<FormControlLabel
+  control={
+    <Checkbox
+      checked={userSelections[questionObj.question] === questionObj.option1}
+      onChange={() => handleOptionChange(questionObj.question, questionObj.option1)}
+      color="primary"
+      style={{ borderRadius: '50%' }}
+    />
+  }
+  label={<span><strong></strong> {questionObj.option1}</span>}
+/>
+      
+<FormControlLabel
+  control={
+    <Checkbox
+      checked={userSelections[questionObj.question] === questionObj.option2}
+      onChange={() => handleOptionChange(questionObj.question, questionObj.option2)}
+      color="primary"
+      style={{ borderRadius: '50%' }}
+    />
+  }
+  label={<span><strong></strong> {questionObj.option2}</span>}
+/>
+
+<FormControlLabel
+  control={
+    <Checkbox
+      checked={userSelections[questionObj.question] === questionObj.option3}
+      onChange={() => handleOptionChange(questionObj.question, questionObj.option3)}
+      color="primary"
+      style={{ borderRadius: '50%' }}
+    />
+  }
+  label={<span><strong></strong> {questionObj.option3}</span>}
+/>
       <FormControlLabel
         control={
           <Checkbox
@@ -396,7 +424,7 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
             style={{ borderRadius: '50%' }}
           />
         }
-        label={<strong>Option 4:</strong> + questionObj.option4}
+        label={<span><strong></strong> {questionObj.option4}</span>}
       />
     </Typography>
     {highlightedAnswers[questionObj.question] && (

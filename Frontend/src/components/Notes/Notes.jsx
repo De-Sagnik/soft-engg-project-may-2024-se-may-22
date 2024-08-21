@@ -36,6 +36,7 @@ const Notes = () => {
                 .then((res) => {
                     setNotes(res.data);
                     setLoading(false);
+                    console.log("YEH", res.data)
                 })
                 .catch((err) => {
                     setError(err.message);
@@ -50,139 +51,154 @@ const Notes = () => {
 
 
 
-  //   const handleGenerate = () => {
-  //     // Implement the logic for generating data here
-  //     console.log("Generate button clicked");
-  //     // Example: Fetch or process data
-  // };
-
-//   const handleGenerate = async (noteId, noteContent) => {
-//     try {
-//         // Send note content to the API
-//         const response = await axios.post('http://localhost:8000/generate_questions', 
-//         { text: noteContent }, 
-//         { 
-//             headers: {
-//                 Authorization: `Bearer ` + localStorage.getItem("token"),
-//             }
-//         });
-
-//         // Update the generated questions for the specific note
-//         setGeneratedQuestions(prevState => ({
-//             ...prevState,
-//             [noteId]: response.data.questions, // Assuming response.data contains the questions
-//         }));
-//     } catch (error) {
-//         console.error("Error generating questions:", error);
-//     }
-// };
 
 
+
+    // const handleDownloadPDF = (note) => {
+    //     const {title, content} = note;
+
+    //     // Create a new jsPDF instance
+    //     const doc = new jsPDF();
+
+    //     // Define colors
+    //     const titleColor = [0, 102, 204]; // Blue color for title
+    //     const contentColor = [0, 0, 0]; // Light blue color for content
+    //     const borderColor = [200, 220, 255]; // Light blue border color
+
+    //     // Set title font and color
+    //     doc.setFontSize(20);
+    //     doc.setFont("Helvetica", "bold");
+    //     doc.setTextColor(...titleColor);
+
+    //     // Add title with background color and border
+    //     const titleWidth = doc.getTextWidth(title);
+    //     const pageWidth = doc.internal.pageSize.getWidth();
+    //     const titleX = (pageWidth - titleWidth) / 2; // Center title
+
+    //     // Draw title background
+    //     doc.setFillColor(...borderColor);
+    //     doc.rect(titleX - 10, 15, titleWidth + 20, 20, 'F');
+
+    //     // Add title text
+    //     doc.text(title, titleX, 25);
+
+    //     // Set font and color for content
+    //     doc.setFontSize(12);
+    //     doc.setFont("Helvetica", "normal");
+    //     doc.setTextColor(...contentColor);
+
+    //     // Add content
+    //     const margins = {top: 50, left: 20};
+    //     const contentX = margins.left;
+    //     let contentY = margins.top;
+
+    //     // Split content into lines that fit the page width
+    //     const lines = doc.splitTextToSize(content, pageWidth - margins.left * 2);
+
+    //     // Add each line to the PDF, ensuring it fits within the margins
+    //     lines.forEach((line) => {
+    //         if (contentY > doc.internal.pageSize.height - margins.top) {
+    //             doc.addPage();
+    //             contentY = margins.top;
+    //         }
+    //         doc.text(line, contentX, contentY);
+    //         contentY += 10; // Adjust line height
+    //     });
+
+    //     // Save the PDF
+    //     doc.save(`${title}.pdf`);
+    // };
 
     const handleDownloadPDF = (note) => {
-        const {title, content} = note;
+      const { title, content } = note;
+  
+      // Function to remove HTML tags
+      const stripHtmlTags = (html) => {
+          const tmp = document.createElement("div");
+          tmp.innerHTML = html;
+          return tmp.textContent || tmp.innerText || "";
+      };
+  
+      // Remove HTML tags from content
+      const cleanedContent = stripHtmlTags(content);
+  
+      // Create a new jsPDF instance
+      const doc = new jsPDF();
+  
+      // Define colors and fonts
+      const titleColor = [33, 37, 41]; // Dark grey color for title
+      const contentColor = [102, 102, 102]; // Gray color for content
+      const borderColor = [200, 220, 255]; // Light blue border color
+  
+      // Function to add header
+      const addHeader = () => {
+          doc.setFontSize(16);
+          doc.setFont("Helvetica", "bold");
+          doc.setTextColor(...titleColor);
+          doc.text(title, doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
+      };
+  
+      // Function to add footer
+      const addFooter = (pageNumber) => {
+          doc.setFontSize(10);
+          doc.setFont("Helvetica", "normal");
+          doc.setTextColor(100);
+          doc.text(`Page ${pageNumber}`, doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() - 10, { align: 'right' });
+      };
+  
+      // Add title page
+      doc.setFontSize(20); // Slightly increased font size for title page
+      doc.setFont("Helvetica", "bold");
+      doc.setTextColor(...titleColor);
+      doc.text(title, doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() / 2 - 10, { align: 'center' });
+  
+      // Add a subtle line under the title
+      doc.setDrawColor(...borderColor);
+      doc.setLineWidth(1);
+      doc.line(20, doc.internal.pageSize.getHeight() / 2 + 5, doc.internal.pageSize.getWidth() - 20, doc.internal.pageSize.getHeight() / 2 + 5);
+  
+      doc.addPage(); // Add new page for content
+  
+      // Set consistent font size and typeface for content
+      const contentFontSize = 12; // Slightly increased font size for content
+      doc.setFontSize(contentFontSize);
+      doc.setFont("Helvetica", "normal");
+      doc.setTextColor(...contentColor);
+  
+      // Add header and footer to the first content page
+      addHeader();
+      addFooter(1);
+  
+      // Adjust margins and line spacing
+      const margins = { top: 20, bottom: 20, left: 20, right: 20 }; // Reduced top margin for less gap
+      const contentX = margins.left;
+      let contentY = margins.top;
+      let pageNumber = 1;
+  
+      // Split content into lines that fit the page width
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const lines = doc.splitTextToSize(cleanedContent, pageWidth - margins.left - margins.right);
+  
+      // Add each line to the PDF, ensuring it fits within the margins
+      lines.forEach((line) => {
+          if (contentY > doc.internal.pageSize.getHeight() - margins.bottom) {
+              doc.addPage();
+              contentY = margins.top;
+              pageNumber += 1;
+              addHeader();
+              addFooter(pageNumber);
+          }
+          doc.text(line, contentX, contentY);
+          contentY += contentFontSize * 1.2; // Adjusted line height for closer spacing
+      });
+  
+      // Save the PDF
+      doc.save(`${title}.pdf`);
+  };
+  
+  
+  
 
-        // Create a new jsPDF instance
-        const doc = new jsPDF();
-
-        // Define colors
-        const titleColor = [0, 102, 204]; // Blue color for title
-        const contentColor = [0, 0, 0]; // Light blue color for content
-        const borderColor = [200, 220, 255]; // Light blue border color
-
-        // Set title font and color
-        doc.setFontSize(20);
-        doc.setFont("Helvetica", "bold");
-        doc.setTextColor(...titleColor);
-
-        // Add title with background color and border
-        const titleWidth = doc.getTextWidth(title);
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const titleX = (pageWidth - titleWidth) / 2; // Center title
-
-        // Draw title background
-        doc.setFillColor(...borderColor);
-        doc.rect(titleX - 10, 15, titleWidth + 20, 20, 'F');
-
-        // Add title text
-        doc.text(title, titleX, 25);
-
-        // Set font and color for content
-        doc.setFontSize(12);
-        doc.setFont("Helvetica", "normal");
-        doc.setTextColor(...contentColor);
-
-        // Add content
-        const margins = {top: 50, left: 20};
-        const contentX = margins.left;
-        let contentY = margins.top;
-
-        // Split content into lines that fit the page width
-        const lines = doc.splitTextToSize(content, pageWidth - margins.left * 2);
-
-        // Add each line to the PDF, ensuring it fits within the margins
-        lines.forEach((line) => {
-            if (contentY > doc.internal.pageSize.height - margins.top) {
-                doc.addPage();
-                contentY = margins.top;
-            }
-            doc.text(line, contentX, contentY);
-            contentY += 10; // Adjust line height
-        });
-
-        // Save the PDF
-        doc.save(`${title}.pdf`);
-    };
-
-//   const handleSummarize = async (noteId) => {
-//     try {
-//         const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}summarize`, { noteId });
-//         // Find the note with the given noteId and update its summary
-//         setNotes((prevNotes) => 
-//             prevNotes.map(note => 
-//                 note._id === noteId ? { ...note, summary: response.data.summary } : note
-//             )
-//         );
-//     } catch (error) {
-//         console.error("Error summarizing note:", error);
-//     }
-// };
-
-// const handleGenerate = async (noteId, noteContent) => {
-//   try {
-//       const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}generate_questions`, { text: noteContent });
-//       // Update the note with the returned summary
-//       setQuestions((prevNotes) => 
-//           prevNotes.map(note => 
-//               note._id === noteId ? { ...note, summary: response.data.summary } : note
-//           )
-//       );
-//   } catch (error) {
-//       console.error("Error generating questions:", error);
-//   }
-// };
-
-// const handleGenerate = async (noteId, noteContent) => {
-//     try {
-//         const response = await axios.post(
-//             `${process.env.REACT_APP_BACKEND_URL}generate_questions`, 
-//             { text: noteContent },
-//             {
-//                 headers: {
-//                     Authorization: `Bearer ` + localStorage.getItem("token"),
-//                 }
-//             }
-//         );
-
-//         // Assuming response.data contains the generated questions
-//         setGeneratedQuestions((prevQuestions) => ({
-//             ...prevQuestions,
-//             [noteId]: response.data.questions, // Update with the questions for the specific note
-//         }));
-//     } catch (error) {
-//         console.error("Error generating questions:", error);
-//     }
-// };
 
 const handleGenerate = async (noteId, noteContent) => {
   try {
@@ -309,6 +325,25 @@ const handleSummarize = async (noteId, noteContent) => {
                 <Typography variant="h6" component="div">
                     {note.title}
                 </Typography>
+
+                <Typography variant="h6" component="div">
+                    {/* URL: {note.url} */}
+                </Typography>
+
+                {note.url && (
+    <Box mt={2}>
+        <iframe 
+            width="100%" 
+            height="315" 
+            src={`https://www.youtube.com/embed/${new URL(note.url).searchParams.get('v')}`} 
+            title="YouTube video player" 
+            frameBorder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowFullScreen>
+        </iframe>
+    </Box>
+)}
+
             
                 {/* Conditionally render summary or content */}
                 {isSummaryVisible[note._id] && note.summary ? (
@@ -316,22 +351,19 @@ const handleSummarize = async (noteId, noteContent) => {
                         {note.summary}
                     </Typography>
                 ) : (
-                    <Typography variant="body2" color="textSecondary" mt={1}>
-                        {note.content}
-                    </Typography>
+                    // <Typography variant="body2" color="textSecondary" mt={1}>
+                    //     {note.content}
+                    // </Typography>
+
+                    <Typography 
+    variant="body2" 
+    color="textSecondary" 
+    mt={1} 
+    dangerouslySetInnerHTML={{ __html: note.content }}
+/>
+
                 )}
 
-
-{/* {generatedQuestions[note._id] && (
-    <Box mt={2}>
-        <Typography variant="h6">Generated Questions:</Typography>
-        <ul>
-            {generatedQuestions[note._id].map((question, index) => (
-                <li key={index}>{question}</li>
-            ))}
-        </ul>
-    </Box>
-)} */}
 
 {generatedQuestions[note._id] && generatedQuestions[note._id].length > 0 && (
     <Box mt={2} sx={{ border: '1px solid #ddd', borderRadius: '8px', p: 2, bgcolor: '#f9f9f9' }}>
@@ -373,12 +405,6 @@ const handleSummarize = async (noteId, noteContent) => {
         ))}
     </Box>
 )}
-
-
-
-
-
-
             </Paper>
             
               ))}
