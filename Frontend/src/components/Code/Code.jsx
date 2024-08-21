@@ -184,7 +184,8 @@ const Code = () => {
                                     Run Code
                                 </Button>
                                 <GenAI
-                                    context={'<|system|> USe the following context to give response \n Question \n' + currentAssignment.question + '\n Code \n' + code + '\n User Query \n'}
+                                    // context={'<|system|> USe the following context to give response \n Question \n' + currentAssignment? currentAssignment.question : '' + '\n Code \n' + editorRef.current.getValue() + '\n User Query \n'}
+                                    context=""
                                     week={12}/>
                             </div>
 

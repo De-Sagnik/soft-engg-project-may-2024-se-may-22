@@ -27,7 +27,7 @@ import {CheckIcon} from "primereact/icons/check";
 const drawerWidth = 240;
 
 const paths = {
-    // Notes: (courseId) => `/notes/${courseId}`,
+    Notes: (courseId) => `/notes/${courseId}`,
     Coding_Assignments: (courseId) => `/code/${courseId}`,
     Graded_Assignments: (courseId) => `/assignments/${courseId}`,
     Memory_Flashcards: (courseId) => `/flashcards/${courseId}`,

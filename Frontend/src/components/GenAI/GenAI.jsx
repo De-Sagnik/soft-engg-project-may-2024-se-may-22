@@ -17,7 +17,7 @@ const GenAI = ( {week, context} ) => {
     const handleGenerate = () => {
         setLoading(true)
         response = ""
-        const ws = new WebSocket(`ws://localhost:8000/search_generate`);
+        const ws = new WebSocket(`ws://localhost:8000/generate`);
         ws.onmessage = function(event) {
             response = response + event.data
             setText(response)
