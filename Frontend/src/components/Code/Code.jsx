@@ -185,7 +185,7 @@ const Code = () => {
                     {/* Right side: Code Editor */}
                     <Grid item xs={12} md={6}>
                         <Grid container spacing={2}>
-                            <div className="flex align-middle gap-2 justify-center">
+                            <div className="flex align-middle gap-2 ml-3 justify-center">
                                 <Button variant="contained" onClick={runCode}>
                                     Run Code
                                 </Button>

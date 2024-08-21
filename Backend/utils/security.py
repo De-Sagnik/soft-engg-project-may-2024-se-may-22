@@ -161,7 +161,7 @@ def handle_authenticated_user(user_email, user_info):
         data={"sub": user.email, "scopes": user.roles},
         expires_delta=access_token_expires
     )
-    return access_token, 'instructor' if 'instructor' in user.roles else 'student'
+    return access_token, 'instructor' if 'admin' in user.roles else 'student'
 
 def create_new_user(user_info):
     db.user.insert_one({

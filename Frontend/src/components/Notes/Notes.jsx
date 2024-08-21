@@ -263,7 +263,7 @@ const Notes = () => {
     </Button> */}
                                         <Button variant="contained"
                                                 onClick={() => handleGenerate(note._id, note.content)}>
-                                            Generate Questions
+                                            Generate
                                         </Button>
 
                                     </Box>

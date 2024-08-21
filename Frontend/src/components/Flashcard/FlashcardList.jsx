@@ -63,8 +63,8 @@ const FlashcardList = () => {
         getFlashCards()
     }, []);
 
-    const show = (severity,  message, summary = 'Info', ) => {
-        toast.current.show({ severity: severity, summary: summary, detail: message});
+    const show = (severity, message, summary = 'Info',) => {
+        toast.current.show({severity: severity, summary: summary, detail: message});
     };
 
     useEffect(() => {
@@ -102,14 +102,15 @@ const FlashcardList = () => {
                         .map((flashcard) => {
                             return (
                                 <>
-                                <Flashcard flashcard={flashcard} key={flashcard._id} getFlashCards={getFlashCards} toast={show}/>
+                                    <Flashcard flashcard={flashcard} key={flashcard._id} getFlashCards={getFlashCards}
+                                               toast={show}/>
                                 </>
                             );
                         })}
                 </div>
             </div>
 
-            <Toast ref={toast} />
+            <Toast ref={toast}/>
         </>
     );
 };

@@ -37,7 +37,8 @@ const GenAI = () => {
             <div className="flex flex-col justify-between h-[80vh] ml-[260px] mr-20">
                 <div>
                     <div className="flex justify-between">
-                        <p className="mb-2 text-xl">Write a query to get AI reply for the course (I can any question from the course only)</p>
+                        <p className="mb-2 text-xl">Write a query to get AI reply for the course (I can any question
+                            from the course only)</p>
                         <div>
                             {loading ?
                                 <i className="pi pi-spin pi-spinner mt-1" style={{fontSize: 'rem'}}></i> : ''}
@@ -45,16 +46,18 @@ const GenAI = () => {
                     </div>
 
                     <div className="w-full flex justify-end">
-                        <div className="max-w-5xl bg-blue-100 h-[67vh] p-4 rounded-2xl overflow-scroll">
-                        <p className="text-justify">
-                            <Markdown>{text}</Markdown>
-                        </p>
+                        <div className="max-w-5xl h-[67vh] p-4 overflow-scroll">
+                            <p className="text-justify bg-gray-100 p-3 rounded-2xl">
+                                <Markdown>{text}</Markdown>
+                            </p>
                         </div>
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <InputText className="w-full" value={query} onChange={(e) => setQuery(e.target.value)}/>
-                    <Button icon="pi pi-send" className="p-button-primary" onClick={handleGenerate}/>
+                    <InputText className="w-full" value={query}
+                               onChange={(e) => setQuery(e.target.value)}/>
+                    <Button icon="pi pi-send" className="p-button-primary" style={{backgroundColor: '#1976d2'}}
+                            onClick={handleGenerate}/>
                 </div>
             </div>
 
