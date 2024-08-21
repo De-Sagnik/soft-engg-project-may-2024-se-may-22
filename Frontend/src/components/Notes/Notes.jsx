@@ -50,32 +50,6 @@ const Notes = () => {
 
 
 
-  //   const handleGenerate = () => {
-  //     // Implement the logic for generating data here
-  //     console.log("Generate button clicked");
-  //     // Example: Fetch or process data
-  // };
-
-//   const handleGenerate = async (noteId, noteContent) => {
-//     try {
-//         // Send note content to the API
-//         const response = await axios.post('http://localhost:8000/generate_questions', 
-//         { text: noteContent }, 
-//         { 
-//             headers: {
-//                 Authorization: `Bearer ` + localStorage.getItem("token"),
-//             }
-//         });
-
-//         // Update the generated questions for the specific note
-//         setGeneratedQuestions(prevState => ({
-//             ...prevState,
-//             [noteId]: response.data.questions, // Assuming response.data contains the questions
-//         }));
-//     } catch (error) {
-//         console.error("Error generating questions:", error);
-//     }
-// };
 
 
 
@@ -134,55 +108,8 @@ const Notes = () => {
         doc.save(`${title}.pdf`);
     };
 
-//   const handleSummarize = async (noteId) => {
-//     try {
-//         const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}summarize`, { noteId });
-//         // Find the note with the given noteId and update its summary
-//         setNotes((prevNotes) => 
-//             prevNotes.map(note => 
-//                 note._id === noteId ? { ...note, summary: response.data.summary } : note
-//             )
-//         );
-//     } catch (error) {
-//         console.error("Error summarizing note:", error);
-//     }
-// };
 
-// const handleGenerate = async (noteId, noteContent) => {
-//   try {
-//       const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}generate_questions`, { text: noteContent });
-//       // Update the note with the returned summary
-//       setQuestions((prevNotes) => 
-//           prevNotes.map(note => 
-//               note._id === noteId ? { ...note, summary: response.data.summary } : note
-//           )
-//       );
-//   } catch (error) {
-//       console.error("Error generating questions:", error);
-//   }
-// };
 
-// const handleGenerate = async (noteId, noteContent) => {
-//     try {
-//         const response = await axios.post(
-//             `${process.env.REACT_APP_BACKEND_URL}generate_questions`, 
-//             { text: noteContent },
-//             {
-//                 headers: {
-//                     Authorization: `Bearer ` + localStorage.getItem("token"),
-//                 }
-//             }
-//         );
-
-//         // Assuming response.data contains the generated questions
-//         setGeneratedQuestions((prevQuestions) => ({
-//             ...prevQuestions,
-//             [noteId]: response.data.questions, // Update with the questions for the specific note
-//         }));
-//     } catch (error) {
-//         console.error("Error generating questions:", error);
-//     }
-// };
 
 const handleGenerate = async (noteId, noteContent) => {
   try {
@@ -316,22 +243,19 @@ const handleSummarize = async (noteId, noteContent) => {
                         {note.summary}
                     </Typography>
                 ) : (
-                    <Typography variant="body2" color="textSecondary" mt={1}>
-                        {note.content}
-                    </Typography>
+                    // <Typography variant="body2" color="textSecondary" mt={1}>
+                    //     {note.content}
+                    // </Typography>
+
+                    <Typography 
+    variant="body2" 
+    color="textSecondary" 
+    mt={1} 
+    dangerouslySetInnerHTML={{ __html: note.content }}
+/>
+
                 )}
 
-
-{/* {generatedQuestions[note._id] && (
-    <Box mt={2}>
-        <Typography variant="h6">Generated Questions:</Typography>
-        <ul>
-            {generatedQuestions[note._id].map((question, index) => (
-                <li key={index}>{question}</li>
-            ))}
-        </ul>
-    </Box>
-)} */}
 
 {generatedQuestions[note._id] && generatedQuestions[note._id].length > 0 && (
     <Box mt={2} sx={{ border: '1px solid #ddd', borderRadius: '8px', p: 2, bgcolor: '#f9f9f9' }}>
@@ -373,12 +297,6 @@ const handleSummarize = async (noteId, noteContent) => {
         ))}
     </Box>
 )}
-
-
-
-
-
-
             </Paper>
             
               ))}
