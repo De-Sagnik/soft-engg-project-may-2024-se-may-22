@@ -67,15 +67,14 @@ async def update_coding_assignment(
 def run_test_cases(code: str, test_cases: List[Dict[str, str]], language: str) -> Tuple[List[Dict[str, str]], int]:
     results = []
     passed_count = 0
-    
+
     for testcase in test_cases:
         input_data = testcase['input']
         expected_output = testcase['output']
-        
+
         if language == 'python':
-            import sys
             result = subprocess.run(
-                [sys.executable, "-c", code],
+                ["python3", "-c", code],
                 input=input_data,
                 capture_output=True,
                 text=True
@@ -99,7 +98,7 @@ def run_test_cases(code: str, test_cases: List[Dict[str, str]], language: str) -
                     "status": "Fail"
                 })
                 continue
-            
+
             # Run Java code
             result = subprocess.run(
                 ["java", "-cp", "static", "Main"],
@@ -119,9 +118,11 @@ def run_test_cases(code: str, test_cases: List[Dict[str, str]], language: str) -
             )
         else:
             raise ValueError(f"Unsupported language: {language}")
-        
+
         result_dict = {
             "error": "",
+            "input": input_data,
+            "expected_output": expected_output,
             "output": result.stdout.strip(),
             "status": ""
         }
@@ -137,7 +138,7 @@ def run_test_cases(code: str, test_cases: List[Dict[str, str]], language: str) -
             result_dict["status"] = "Fail"
         
         results.append(result_dict)
-    
+
     return results, passed_count
 
 @coding_assignment.post('/run', responses=responses)
@@ -162,12 +163,15 @@ async def run_code(
         public_results, passed_public_count = run_test_cases(decoded_code, public_testcases, assgn['language'])
         private_results, passed_private_count = run_test_cases(decoded_code, private_testcases, assgn['language'])
 
+        mark = int(round(passed_private_count/len(private_testcases)*100,2))
+
         # Return results
         return {
             "public_testcases": public_results,
             "private_testcases": private_results,
             "passed_public_count": f"{passed_public_count}/{len(public_testcases)}",
-            "passed_private_count": f"{passed_private_count}/{len(private_testcases)}"
+            "passed_private_count": f"{passed_private_count}/{len(private_testcases)}",
+            "mark": mark
         }
     except Exception as e:
         return {"error": str(e)}
