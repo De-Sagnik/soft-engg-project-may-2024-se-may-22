@@ -21,7 +21,7 @@ const Code = () => {
   const [currentAssignment, setCurrentAssignment] = useState(null);
   // const courseId = params.courseId
   const [week, setWeek] = useState(1);
-  const [context, setContext] = useState(""); 
+  const [context, setContext] = useState("");
 
   useEffect(() => {
     console.log("Auth token", localStorage.getItem("token"));
@@ -41,7 +41,9 @@ const Code = () => {
         if (res.data.language) {
           setFileName(`script.${res.data.language}`);
         }
-        setContext(`Use the following context to give response \n Question: \n ${res.data.question}`);
+        setContext(
+          `<|System|> No matter what, do not give the exact and correct answer. Just give hints. Use the following context to give response \n <|Question|>: \n ${res.data.question}`
+        );
       })
       .catch((err) => {
         console.error("Error fetching programming assignment:", err.response);
@@ -77,8 +79,8 @@ const Code = () => {
           },
         }
       );
-      setContext(prevContext => prevContext + `\n Code: \n${code}`);
-      
+      setContext((prevContext) => prevContext + `\n <|Code|>: \n${code}`);
+
       console.log("Response:", response.data);
       setTestResults(response.data);
     } catch (error) {
@@ -187,7 +189,7 @@ const Code = () => {
               </CardContent>
             </Card>
           </Grid>
-          
+
           {/* Right side: Code Editor */}
           <Grid item xs={12} md={6}>
             <Grid container spacing={2}>
