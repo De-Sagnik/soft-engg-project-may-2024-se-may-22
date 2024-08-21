@@ -34,7 +34,7 @@ const GenAI = ({week, context}) => {
 
     return (
         <>
-            <Button onClick={() => setVisible(true)}>
+            <Button style={{backgroundColor: '#1976d2'}} onClick={() => setVisible(true)}>
                 Ask AI
             </Button>
             <Dialog header="Ask AI" visible={visible} style={{ width: '50vw', height: '75vh' }} onHide={() => {if (!visible) return; setVisible(false); }}>
@@ -47,8 +47,8 @@ const GenAI = ({week, context}) => {
                         </p>
                     </div>
                     <div className="flex">
-                        <InputText className="w-full" value={query} onChange={(e) => setQuery(e.target.value)}/>
-                        <Button icon="pi pi-send" className="p-button-primary" onClick={handleGenerate}/>
+                        <InputText className="w-full mr-3" value={query} onChange={(e) => setQuery(e.target.value)}/>
+                        <Button icon="pi pi-send" className="p-button-primary" style={{backgroundColor: '#1976d2'}} onClick={handleGenerate}/>
                     </div>
                 </div>
             </Dialog>
