@@ -234,6 +234,9 @@ const Code = () => {
                             <Typography>
                               Output: {result.output || "No output available"}
                             </Typography>
+                            {result.status === "Fail" && (
+                                <Typography>Error: {result.error}</Typography>
+                              ) }
                           </div>
                         ))}
                         <Typography>
