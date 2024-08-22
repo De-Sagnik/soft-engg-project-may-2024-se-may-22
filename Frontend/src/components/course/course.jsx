@@ -31,6 +31,7 @@ const CourseSelectPage = (props) => {
 
   const setID = (id) => {
     console.log(id);
+    localStorage.setItem("course_id", id);
     window.open("/course/" + id, "_self");
   };
 

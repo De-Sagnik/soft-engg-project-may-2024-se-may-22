@@ -123,14 +123,16 @@ async def get_course_week_assignment(
 @course.get('/get_all_assignment', responses=responses)
 async def get_course_week_assignment(
     current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])],
-    course_id: str,
+    course_id: str, week: int = Query(le=12, ge=1),
+    assgn_type: AssignmentType = Query(description="the type of the assignment")
 ):
     course = db.course.find_one({"course_id": course_id})
     if not course:
         raise NotExistsError()
     collection = db.coding_assignment
-
-    results = collection.find({"course_id": course_id, "assgn_type": 'GrPA'})
-    results_1  = collection.find({"course_id": course_id, "assgn_type": 'PPA'})
-
-    return [convert_to_serializable(result) for result in results] + [convert_to_serializable(result) for result in results_1]
+    
+    results = collection.find({"course_id": course_id, "week": week,"assgn_type": assgn_type})
+    # results_1  = collection.find({"course_id": course_id, "assgn_type": 'PPA'})
+    
+    return [convert_to_serializable(result) for result in results] 
+# + [convert_to_serializable(result) for result in results_1]

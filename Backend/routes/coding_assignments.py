@@ -24,10 +24,10 @@ async def create_programming_question(
         return {"msg": "success", "db_entry_id": str(assignment_in.inserted_id)}
     raise AlreadyExistsError()
     
-@coding_assignment.get('/get', responses=responses)
-async def get_coding_assignment(week: int, course_id: str, current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])]):
+@coding_assignment.get('/get/{assgn_id}', responses=responses)
+async def get_coding_assignment(assgn_id: str, current_user: Annotated[User, Security(get_current_active_user, scopes=["user"])]):
     try:
-        find = db.coding_assignment.find_one({"course_id": course_id, "week": week})
+        find = db.coding_assignment.find_one({'_id': ObjectId(assgn_id)})
         if find:
             return objectEntity(find)  # Convert the MongoDB document to JSON serializable format
         else:
