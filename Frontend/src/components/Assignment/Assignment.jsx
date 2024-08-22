@@ -77,6 +77,7 @@ const QuestionCard = ({question, handle_answer_change, user_answers}) => {
                             ))}
                     </RadioGroup>
                 </FormControl>
+                
             );
         } else if (question.q_type === "MSQ") {
             return (
