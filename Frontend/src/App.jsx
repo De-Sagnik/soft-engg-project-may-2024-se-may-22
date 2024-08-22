@@ -2,7 +2,8 @@
 import React from "react";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Notes from "./components/Notes/Notes";
-import Code from "./components/Code/Code";
+import Code_prob from "./components/Code/Code";
+import Code from "./components/Code/Questions";
 import Assignment from "./components/Assignment/Assignment";
 import CourseInstructor from "./components/instructor_coding_assignment/Code_instructor";
 import Instructor from "./components/instructor_GA/GA_instructor";
@@ -24,6 +25,7 @@ const App = () => {
                     <Route path="/context-search/:courseId" element={<ContextAI/>}/>
                     <Route path="/assignments/:courseId" exact element={<Assignment/>}></Route>
                     <Route path="/code/:courseId" exact element={<Code/>}></Route>
+                    <Route path="/code/problem/:assgn_id" exact element={<Code_prob/>}></Route>
                     <Route path="/flashcards/:courseId" exact element={<FlashcardList/>}/>
                     <Route
                         path="/instructor/code"
