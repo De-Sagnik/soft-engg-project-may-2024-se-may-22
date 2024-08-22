@@ -24,36 +24,18 @@ import Sidenav from "../Sidenav";
 import axios from "axios";
 import {useParams} from "react-router-dom";
 
-
-const drawerWidth = 240;
-
-const formatDateTime = (dateString) => {
-    const date = new Date(dateString);
-    const options = {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        timeZoneName: 'short',
-    };
-    return date.toLocaleDateString('en-US', options);
-};
-
-
 const QuestionCard = ({question, handle_answer_change, user_answers}) => {
     const handleChange = (event) => {
         if (question.q_type === "MCQ") {
-            handle_answer_change(question.id, event.target.value);
+            handle_answer_change(question._id, event.target.value);
         } else if (question.q_type === "MSQ") {
-            const currentAnswers = user_answers[question.id] || [];
+            const currentAnswers = user_answers[question._id] || [];
             const newAnswers = event.target.checked
                 ? [...currentAnswers, event.target.value]
                 : currentAnswers.filter((answer) => answer !== event.target.value);
-            handle_answer_change(question.id, newAnswers);
+            handle_answer_change(question._id, newAnswers);
         } else if (question.q_type === "Numerical") {
-            handle_answer_change(question.id, event.target.value);
+            handle_answer_change(question._id, event.target.value);
         }
     };
 
@@ -162,6 +144,7 @@ const Assignment = () => {
     }, [courseId, week, assgnType]);
 
     const handle_answer_change = (questionId, answer) => {
+        console.log("Setting answer for question", questionId, answer);
         setUserAnswers((prevAnswers) => ({
             ...prevAnswers,
             [questionId]: answer,
@@ -254,33 +237,35 @@ const Assignment = () => {
             }
         }
 
+        const load = []
+
         for (const [questionId, answer] of Object.entries(user_answers)) {
-            try {
-                await axios.post(
-                    "http://localhost:8000/user/submit_answers",
-                    {
-                        assgn_id: questionId,
-                        user_id: user_id,
-                        answer: answer,
-                    },
-                    {
-                        headers: {
-                            Authorization: `Bearer ` + localStorage.getItem("token"),
-                        },
-                    }
-                );
-            } catch (err) {
-                console.error(err);
-                alert("Error submitting answer for question " + questionId);
-                return;
-            }
+            load.push({
+                assgn_id: questionId,
+                user_id: user_id,
+                answer: answer,
+            })
         }
 
+        try {
+            await axios.post(
+                "http://localhost:8000/user/submit_answers",
+                load,
+                {
+                    headers: {
+                        Authorization: `Bearer ` + localStorage.getItem("token"),
+                    }
+                })
+        } catch (err) {
+            console.error(err);
+        }
         alert("All answers submitted successfully");
-    };
+    }
+
 
     return (
         <>
+
             <Sidenav/>
             <Box marginLeft="280px" marginRight="40px" marginTop="20px">
                 {/* Filters */}
@@ -451,6 +436,7 @@ const Assignment = () => {
 
         </>
     );
-};
+}
+
 
 export default Assignment;
