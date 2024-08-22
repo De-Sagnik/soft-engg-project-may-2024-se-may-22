@@ -37,8 +37,7 @@ const GenAI = () => {
             <div className="flex flex-col justify-between h-[80vh] ml-[260px] mr-20">
                 <div>
                     <div className="flex justify-between">
-                        <p className="mb-2 text-xl">Write a query to get AI reply for the course (I can any question
-                            from the course only)</p>
+                        <p className="mb-2 text-xl">Write a query to get an AI response related to the course. You can ask any question specifically about the course.</p>
                         <div>
                             {loading ?
                                 <i className="pi pi-spin pi-spinner mt-1" style={{fontSize: 'rem'}}></i> : ''}

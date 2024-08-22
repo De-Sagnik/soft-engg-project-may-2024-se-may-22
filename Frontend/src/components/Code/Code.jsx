@@ -16,8 +16,10 @@ import GenAI from "../GenAI/GenAI";
 import { Toast } from "primereact/toast";
 
 const Code = () => {
-  const { assgn_id } = useParams();
-  console.log("Assgn ID:", assgn_id);
+  const params = useParams();
+  console.log("Assgn ID:", params);
+  const assgn_id = params.assgn_id;
+  const courseId = params.courseId;
   const [currentAssignment, setCurrentAssignment] = useState(null);
   const [context, setContext] = useState("");
   const toast = useRef(null);

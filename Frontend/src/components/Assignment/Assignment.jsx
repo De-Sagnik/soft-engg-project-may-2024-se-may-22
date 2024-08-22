@@ -1,5 +1,5 @@
 "use client";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {
     Box,
     Button,
@@ -23,6 +23,7 @@ import {
 import Sidenav from "../Sidenav";
 import axios from "axios";
 import {useParams} from "react-router-dom";
+import {Toast} from "primereact/toast";
 
 const QuestionCard = ({question, handle_answer_change, user_answers}) => {
     const handleChange = (event) => {
@@ -216,7 +217,7 @@ const Assignment = () => {
         const deadline_date = new Date(deadline);
 
         if (today > deadline_date) {
-            alert("Deadline has passed");
+            show("Deadline has passed", "danger");
             return;
         }
 
@@ -232,7 +233,7 @@ const Assignment = () => {
                 localStorage.setItem("user_id", user_id);
             } catch (err) {
                 console.error(err);
-                alert("Error fetching user details");
+                show("Error fetching user details", "danger");
                 return;
             }
         }
@@ -243,7 +244,7 @@ const Assignment = () => {
             load.push({
                 assgn_id: questionId,
                 user_id: user_id,
-                answer: answer,
+                answer: [answer],
             })
         }
 
@@ -258,14 +259,20 @@ const Assignment = () => {
                 })
         } catch (err) {
             console.error(err);
+            show("Error submitting answers", "danger");
         }
-        alert("All answers submitted successfully");
+        show("All answers submitted successfully", "success");
     }
+    const toast = useRef(null);
+
+    const show = (message, severity = 'info') => {
+        toast.current.show({severity: severity, summary: 'Info', detail: message});
+    };
 
 
     return (
         <>
-
+            <Toast ref={toast}/>
             <Sidenav/>
             <Box marginLeft="280px" marginRight="40px" marginTop="20px">
                 {/* Filters */}
@@ -432,6 +439,8 @@ const Assignment = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <br></br>
+            <br></br>
 
 
         </>

@@ -25,7 +25,7 @@ const App = () => {
                     <Route path="/context-search/:courseId" element={<ContextAI/>}/>
                     <Route path="/assignments/:courseId" exact element={<Assignment/>}></Route>
                     <Route path="/code/:courseId" exact element={<Code/>}></Route>
-                    <Route path="/code/problem/:assgn_id" exact element={<Code_prob/>}></Route>
+                    <Route path="/code/:courseId/problem/:assgn_id" exact element={<Code_prob/>}></Route>
                     <Route path="/flashcards/:courseId" exact element={<FlashcardList/>}/>
                     <Route
                         path="/instructor/code"
