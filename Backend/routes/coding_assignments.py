@@ -74,7 +74,7 @@ def run_test_cases(code: str, test_cases: List[Dict[str, str]], language: str) -
 
         if language == 'python':
             result = subprocess.run(
-                ["python3", "-c", code],
+                ["python", "-c", code],
                 input=input_data,
                 capture_output=True,
                 text=True
